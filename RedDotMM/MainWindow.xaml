@@ -1,0 +1,351 @@
+﻿<RibbonWindow x:Class="RedDotMM.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RedDotMM"
+        xmlns:uihelper="clr-namespace:RedDotMM.UIHelper"
+        mc:Ignorable="d"
+              Language="de-DE"
+        Title="MainWindow" Height="450" Width="800">
+    <RibbonWindow.Resources>
+        <uihelper:BoolVisibleConverter
+            x:Key="boolVisibleConverter"
+            TrueValue="Visible" FalseValue="Collapsed" />
+        <uihelper:BoolVisibleConverter
+            x:Key="invertBoolVisibleConverter"
+            TrueValue="Collapsed" FalseValue="Visible" />
+
+    </RibbonWindow.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Ribbon>
+            <Ribbon.ApplicationMenu>
+                <RibbonApplicationMenu>
+                    <RibbonApplicationMenuItem x:Name="mnuInfo" Header="Info"  Click="mnuInfo_Click"/>
+                    <RibbonApplicationMenuItem  x:Name="mnuExit" Header="Beenden" Click="Exit_Click"/>
+                </RibbonApplicationMenu>
+            </Ribbon.ApplicationMenu>
+            <RibbonTab x:Name="MainTab" Header="Start">
+                <RibbonGroup Header="Laufendes Schießen">
+                    <RibbonToggleButton x:Name="ctbProbe" Label="Probe" IsChecked="{Binding Probe}"/>
+                    <RibbonButton x:Name="cmdFehlschuss" Label="Fehlschuss" Click="cmdFehlschuss_Click" />
+                </RibbonGroup>
+                <RibbonGroup Header="Verbindung" >
+                    <TextBlock Text="Port" />
+                    <ComboBox SelectedItem="{Binding SelectedPort}" ItemsSource="{Binding Ports}"/>
+                    <!--<RibbonComboBox x:Name="cmbPort" Label="Port: " ItemsSource="{Binding Path=Ports}" />-->
+                    <RibbonButton x:Name="cmdRefreshPorts" Label="Ports aktualisieren" Click="cmdRefreshPorts_Click"/>
+                    <RibbonButton x:Name="ConnectButton" Label="Verbinden" Click="ConnectButton_Click" Visibility="{Binding Connected, Converter={StaticResource ResourceKey=invertBoolVisibleConverter}}" />
+                    <RibbonButton x:Name="CloseButton" Label="Trennen" Click="CloseButton_Click" Visibility="{Binding Connected, Converter={StaticResource ResourceKey=boolVisibleConverter}}"/>
+                </RibbonGroup>
+                <RibbonGroup Header="Handheld-Verbindung" >
+                    <TextBlock Text="Port" />
+                    <ComboBox SelectedItem="{Binding HandHeldSelectedPort}" ItemsSource="{Binding Ports}"/>
+                    <!--<RibbonComboBox x:Name="cmbPort" Label="Port: " ItemsSource="{Binding Path=Ports}" />-->
+                    <RibbonButton x:Name="cmdHandHeldRefreshPorts" Label="Ports aktualisieren" Click="cmdRefreshPorts_Click"/>
+                    <RibbonButton x:Name="cmdHandHeldConnectButton" Label="Verbinden" Click="ConnectHandHeldButton_Click" Visibility="{Binding HandHeldConnected, Converter={StaticResource ResourceKey=invertBoolVisibleConverter}}" />
+                    <RibbonButton x:Name="cmdHandHeldCloseButton" Label="Trennen" Click="CloseHandHeldButton_Click" Visibility="{Binding HandHeldConnected, Converter={StaticResource ResourceKey=boolVisibleConverter}}"/>
+                </RibbonGroup>
+            </RibbonTab>
+            <RibbonTab x:Name="WettkampfTab" Header="Daten">
+                <RibbonGroup Header="Allgemein" >
+                    <RibbonButton x:Name="cmdNeu" Label="Neu" Click="cmdNeu_Click"/>
+                    <RibbonButton x:Name="cmdLöschen" Label="Löschen" />
+                    <RibbonButton x:Name="cmdSpeichern" Label="Speichern" Click="cmdSpeichern_Click" />
+                    <RibbonButton x:Name="cmdDrucken" Label="Drucken" Click="cmdDrucken_Click"/>
+                </RibbonGroup>
+
+                <RibbonGroup Header="Schützen" >
+                    <RibbonButton x:Name="cmdSchuetzeImportieren" Label="Schützen aus CSV importieren" Click="cmdSchuetzeImportieren_Click" />
+                    <RibbonButton x:Name="cmdSchuetzeImportTemplate" Label="Leere CSV erstellen" Click="cmdSchuetzeImportTemplate_Click"/>
+                </RibbonGroup>
+
+                <RibbonGroup Header="Wettbewerb" >
+                    <RibbonButton x:Name="cmdWettbewerbExportieren" Label="Wettbewerb als CSV Exportieren"  Click="cmdWettbewerbExportieren_Click"/>
+                </RibbonGroup>
+            </RibbonTab>
+        </Ribbon>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <!-- Für Splitter -->
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto" MaxWidth="100"/>
+            </Grid.ColumnDefinitions>
+            <GridSplitter Grid.Column="1" Grid.RowSpan="3" HorizontalAlignment="Center"
+    VerticalAlignment="Stretch"
+    Background="Black" 
+    ShowsPreview="True"
+    Width="5" />
+
+            <Grid Grid.Column="0" Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <!-- für Splitter -->
+                    <RowDefinition Height="*" MinHeight="150"/>
+                    <RowDefinition Height="Auto"/>
+                    <!-- für Splitter -->
+                    <RowDefinition Height="Auto" MinHeight="100"/>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    Background="Black" 
+                    ShowsPreview="True"
+                    Height="5" />
+                <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    Background="Black" 
+                    ShowsPreview="True"
+                    Height="5" />
+
+                <TextBlock Grid.Row="0" Text="Wettbewerbe" Margin="10" FontWeight="Bold" />
+                <ListView Grid.Row="0" Margin="10,50,10,10" ItemsSource="{Binding Wettbewerbe}" SelectedItem="{Binding SelectedWettbewerb, Mode=TwoWay}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Name}" Margin="5" FontWeight="Bold" />
+                                <TextBlock Text="{Binding Datum}" Margin="5,5,5,10" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+
+
+                <TextBlock Grid.Row="2" Text="Schuetzen" Margin="10" FontWeight="Bold" />
+                <TextBox Grid.Row="2" Margin="10,30,10,0" Text="{Binding SchuetzenFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="20" VerticalAlignment="Top" />
+                <ListView Grid.Row="2" Margin="10,60,10,10" ItemsSource="{Binding Schuetzen}" SelectedItem="{Binding SelectedSchuetze, Mode=TwoWay}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding AnzeigeName}" Margin="5" FontWeight="Bold" />
+                                <Button x:Name="cmdSchuetzeLoeschen" Content="DEL" Click="cmdSchuetzeLoeschen_Click" Margin="5" />                                
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <TextBlock Grid.Row="4" Text="Scheiben" Margin="10" FontWeight="Bold" />
+                <ListView Grid.Row="4" Margin="10,50,10,10" ItemsSource="{Binding Ergebnisse}" SelectedItem="{Binding Ergebnis, Mode=TwoWay}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Scheibe Nr" Margin="5" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding LfdNummer}" Margin="5" FontWeight="Bold" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Anzahl Wertungsschüsse" Margin="5" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding AnzahlWertungsschuesse}" Margin="5" FontWeight="Bold" />
+                                </StackPanel>
+                                <Button x:Name="cmdScheibeLoeschen" Content="Löschen" Click="cmdScheibeLoeschen_Click" Margin="5" />
+                                <TextBlock Text="Abgeschlossen" Visibility="{Binding ErgebnisAbgeschlossen, Converter={StaticResource ResourceKey=boolVisibleConverter}}" Margin="5" FontWeight="Bold" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+
+
+
+            </Grid>
+            <TabControl x:Name="tcMainTab" Grid.Column="2" Grid.Row="1" Margin="10,0,10,10">
+                <TabItem x:Name="tabScheibe" Header="Scheibe">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Schussgeld" FontWeight="Bold" Margin="5"/>
+                            <TextBlock Text="Schütze:" Margin="5"/>
+                            <TextBlock Text="{Binding Ergebnis.Schuetze.AnzeigeName}" Margin="5" />
+                            <TextBox Text="{Binding Ergebnis.BezahltesSchussGeld, StringFormat=C, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" Width="100" HorizontalAlignment="Left" />
+                            <Button x:Name="cmdErgebnisSchussgeldSpeichern" Content="Update" Margin="5" HorizontalAlignment="Stretch" Click="cmdErgebnisSchussgeldSpeichern_Click" />
+                        </StackPanel>
+                        
+                        
+
+                        <local:ScheibenControl Grid.Column="2" Margin="20" x:Name="Scheibe" >
+
+                        </local:ScheibenControl>
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="tabErgebnis" Header="Ergebnis" DataContext="{Binding}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="Nummer" Margin="10" FontWeight="Bold" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Margin="10,10,10,10" Text="{Binding Ergebnis.LfdNummer, Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="1" Text="Schütze" Margin="10" FontWeight="Bold" />
+                        <ComboBox Grid.Row="1" Grid.Column="1" Margin="10,10,10,10" 
+                                  ItemsSource="{Binding Schuetzen}" 
+                                  SelectedItem="{Binding Ergebnis.Schuetze, Mode=TwoWay}" 
+                                  DisplayMemberPath="AnzeigeName" />
+                        <TextBlock Grid.Row="2" Text="Wettbewerb" Margin="10" FontWeight="Bold" />
+                        <ComboBox Grid.Row="2" Grid.Column="1" Margin="10,10,10,10" 
+                                  ItemsSource="{Binding Wettbewerbe}" 
+                                  SelectedItem="{Binding Ergebnis.Wettbewerb, Mode=TwoWay}" 
+                                  DisplayMemberPath="Name" />
+                        <TextBlock Grid.Row="3" Text="Zeitstempel" Margin="10" FontWeight="Bold" />
+                        <TextBox Grid.Row="3" Grid.Column="1" Margin="10,10,10,10" Text="{Binding Ergebnis.Zeitstempel, Mode=TwoWay}" />
+
+                        <ListView Grid.Row="6" Grid.Column="1" Margin="10" ItemsSource="{Binding Ergebnis.Schuesse}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding LfdSchussNummer}" Margin="5" FontWeight="Bold" />
+                                        <TextBlock Text="{Binding Typ}" Margin="5" FontWeight="Bold" />
+                                        <TextBlock Text="{Binding Wert}" Margin="5" />
+                                        <Button x:Name="cmdErgebnisSchussLoeschen" Content="Löschen" Click="cmdErgebnisSchussLoeschen_Click" />
+                                    </StackPanel>
+                                </DataTemplate>
+
+                            </ListView.ItemTemplate>
+                        </ListView>
+
+                    </Grid>
+
+                </TabItem>
+                <TabItem x:Name="tabSchuetze" Header="Schütze" DataContext="{Binding SelectedSchuetze}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="Nummer" Margin="10" FontWeight="Bold" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Margin="10,10,10,10" Text="{Binding LfdNummer, Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="1" Text="Name" Margin="10" FontWeight="Bold" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Margin="10,10,10,10" Text="{Binding Name, Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="2" Text="Vorname" Margin="10" FontWeight="Bold" />
+                        <TextBox Grid.Row="2" Grid.Column="1" Margin="10,10,10,10" Text="{Binding Vorname, Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="3" Text="Zusatz" Margin="10" FontWeight="Bold" />
+                        <TextBox Grid.Row="3" Grid.Column="1" Margin="10,10,10,10" Text="{Binding Zusatz, Mode=TwoWay}" />
+
+
+
+
+                    </Grid>
+
+
+                </TabItem>
+
+
+                <TabItem x:Name="tabWettkampf" Header="Wettkampf" DataContext="{Binding SelectedWettbewerb}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="Wettbewerbname" Margin="10" FontWeight="Bold" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Margin="10,10,10,10" Text="{Binding Name, Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="1" Text="Datum" Margin="10" FontWeight="Bold" />
+                        <DatePicker Grid.Row="1" Grid.Column="1" Margin="10,10,10,10" SelectedDate="{Binding Datum, Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="2" Text="Probeschüsse" Margin="10" FontWeight="Bold" />
+                        <TextBox Grid.Row="2" Grid.Column="1" Margin="10" Text="{Binding Probeschuss, Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="3" Text="Wertungsschüsse" Margin="10" FontWeight="Bold" />
+                        <TextBox Grid.Row="3" Grid.Column="1" Margin="10" Text="{Binding Wertung}" />
+
+                        <TextBlock Grid.Row="4" Text="Teilerwertung" Margin="10" FontWeight="Bold" />
+                        <CheckBox Grid.Row="4" Grid.Column="1" Margin="10" IsChecked="{Binding Teilerwertung, Mode=TwoWay}" Content="Teilerwertung" />
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="tabAuswertung" Header="Auswertung">
+                    <DockPanel Margin="10">
+                        <TextBlock DockPanel.Dock="Top" Text="Auswertung" Margin="10" FontSize="20" FontWeight="Bold" />
+                        <TextBlock DockPanel.Dock="Top" Text="{Binding SelectedWettbewerb.Name}" Margin="10" FontSize="16" FontWeight="Bold" />
+                        <DataGrid DockPanel.Dock="Top" ItemsSource="{Binding Auswertung}" AutoGenerateColumns="False" Margin="10">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Nr" Binding="{Binding LfdNummerSchuetze}" />
+                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+                                <DataGridTextColumn Header="Vorname" Binding="{Binding Vorname}" />
+                                <DataGridTextColumn Header="Scheibe Nr." Binding="{Binding LfdNummerScheibe}" />
+                                <DataGridTextColumn Header="Anzahl Wertungsschüsse" Binding="{Binding AnzahlWertungsschuesse}" />
+                                <DataGridTextColumn Header="Schussgeld" Binding="{Binding SchussgeldBezahlt, StringFormat=C}" />
+                                <DataGridTextColumn Header="Gesamt Wertung" Binding="{Binding GesamtErgebnis}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+
+
+                </TabItem>
+            </TabControl>
+            <!-- -->
+            <TextBlock Text="NICHT VERBUNDEN!" Foreground="Red" FontSize="30" TextAlignment="Center" FontWeight="Bold" Grid.Column="3"  Grid.RowSpan="5"    VerticalAlignment="Center"                  
+                        HorizontalAlignment="Center" Margin="5" RenderTransformOrigin="0.5,0.5"
+                       Visibility="{Binding Connected, Converter={StaticResource ResourceKey=invertBoolVisibleConverter}}"
+                       TextWrapping="WrapWithOverflow"
+                       >
+                <TextBlock.LayoutTransform>
+                    <TransformGroup>
+                        <!--<ScaleTransform/>-->
+                        <!--<SkewTransform/> -->
+                        <RotateTransform Angle="90"/>
+                        <!--<TranslateTransform/>-->
+                    </TransformGroup>
+                </TextBlock.LayoutTransform>
+            </TextBlock>
+
+
+
+        </Grid>
+    </Grid>
+</RibbonWindow>

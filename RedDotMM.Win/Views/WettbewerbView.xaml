@@ -1,0 +1,116 @@
+﻿<UserControl x:Class="RedDotMM.Win.Views.WettbewerbView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RedDotMM.Win.Views"
+             xmlns:vm="clr-namespace:RedDotMM.Win.Model"
+             Language="de-DE"
+             mc:Ignorable="d"   
+             d:DesignHeight="450" d:DesignWidth="800">
+    <!--<UserControl.DataContext>
+        <vm:WettbewerbViewModel />
+    </UserControl.DataContext>-->
+    
+    <Grid Margin="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+
+        </Grid.RowDefinitions>
+
+        <Label Grid.Column="0" Grid.Row="0" Content="Wettbewerb:" FontSize="16" />
+       
+
+        <TextBlock Grid.Column="0" 
+                   Grid.Row="1"
+                   Text="Name"
+                   VerticalAlignment="Center"/>
+        
+        <TextBox Grid.Column="1" 
+                Grid.Row="1" 
+                Text="{Binding DatenObjekt.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}"                
+                Margin="5"
+                 VerticalAlignment="Center"/>
+
+        <TextBlock Grid.Column="0" 
+                   Grid.Row="2"
+                   Text="Datum"
+                   VerticalAlignment="Center"/>
+
+        <DatePicker Grid.Column="1" 
+                    Grid.Row="2" 
+                    SelectedDate="{Binding DatenObjekt.Datum,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,  ValidatesOnDataErrors=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
+                    Margin="5"
+                    VerticalAlignment="Center"/>
+
+        <TextBlock Grid.Column="0" 
+           Grid.Row="3"
+           Text="Anzahl Wertungsschüsse pro Scheibe"
+           VerticalAlignment="Center"/>
+        <TextBox Grid.Column="1"
+        Grid.Row="3" 
+        Text="{Binding DatenObjekt.AnzahlWertungsSchuss,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,  ValidatesOnDataErrors=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True, StringFormat=G}"                
+        Margin="5"
+        VerticalAlignment="Center"
+         />
+
+
+        <TextBlock Grid.Column="0" 
+                   Grid.Row="4"
+                   Text="Anzahl Probeschüsse pro Scheibe"
+                   VerticalAlignment="Center"/>
+        <TextBox Grid.Column="1"
+                Grid.Row="4" 
+                Text="{Binding DatenObjekt.AnzahlProbeschuss,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,  ValidatesOnDataErrors=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True, StringFormat=G}"                
+                Margin="5"
+                VerticalAlignment="Center"
+                 />
+
+        <CheckBox Grid.Row="5" Grid.Column="1" Margin="5"
+            Content="Probeschüsse nur auf erster Scheibe der Serie"
+                  IsChecked="{Binding DatenObjekt.ProbeNurAufErsterScheibe,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,  ValidatesOnDataErrors=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
+                  VerticalAlignment="Center"/>
+
+        <TextBlock Grid.Column="0" 
+                   Grid.Row="6"
+                   Text="Anzahl Scheiben"
+                   VerticalAlignment="Center"/>
+        <TextBox Grid.Column="1"
+                 Grid.Row="6"
+                 Text="{Binding DatenObjekt.AnzahlSerien,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,  ValidatesOnDataErrors=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True, StringFormat=G}"
+                 Margin="5"
+                 VerticalAlignment="Center" />
+        
+        <!-- Schussgeld -->
+        <TextBlock Grid.Column="0" Grid.Row="7"
+                   Text="Schussgeld"
+                  
+                   VerticalAlignment="Center" />
+        <TextBox Grid.Column="1" Grid.Row="7"
+                 Text="{Binding DatenObjekt.SchussGeld, ValidatesOnDataErrors=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True, StringFormat=C}"
+                 Margin="5"
+                 VerticalAlignment="Center" />
+
+        <CheckBox Grid.Row="8" Grid.Column="1" Margin="5"
+     Content="Teilerwertung"
+           IsChecked="{Binding DatenObjekt.Teilerwertung,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,  ValidatesOnDataErrors=True, ValidatesOnExceptions=True, ValidatesOnNotifyDataErrors=True}" 
+           VerticalAlignment="Center"/>
+
+
+
+    </Grid>
+</UserControl>

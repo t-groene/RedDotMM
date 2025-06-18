@@ -1,0 +1,285 @@
+﻿<Window x:Class="RedDotMM.Win.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RedDotMM.Win"
+        xmlns:fa5="http://schemas.fontawesome.com/icons/"
+        xmlns:vm="clr-namespace:RedDotMM.Win.Model"
+        xmlns:v="clr-namespace:RedDotMM.Win.Views"
+        xmlns:model="clr-namespace:RedDotMM.Model;assembly=RedDotMM.Model"
+        mc:Ignorable="d"
+        Language="de-DE"
+        Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <ResourceDictionary xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                            xmlns:local="clr-namespace:RedDotMM.Win">
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="MVVM-TypeDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Window.DataContext>
+        <vm:MainModel />
+    </Window.DataContext>
+    
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <!-- In MainWindow.xaml -->
+        <Ribbon Grid.Row="0">
+            <Ribbon.ApplicationMenu>
+                <RibbonApplicationMenu>                    
+                    <RibbonApplicationMenuItem Header="Beenden" />
+                </RibbonApplicationMenu>  
+            </Ribbon.ApplicationMenu>
+            <RibbonTab x:Name="MainTab" Header="Start">
+                <RibbonGroup Header="Bearbeiten">
+                    <RibbonButton  x:Name="cmdSpeichern"  Label="Speichern" Command="{Binding AktivesFenster.SpeichernCommand }"/>
+                    <RibbonButton x:Name="cmdLoeschen" Label="Löschen" Command="{Binding AktivesFenster.LoeschenCommand }" />
+                    <RibbonButton x:Name="cmdSchließen" Label="Schließen" Command="{Binding AktivesFenster.SchliessenCommand }" />
+                </RibbonGroup>
+
+                <RibbonGroup Header="Daten">
+                    
+                    <RibbonSeparator />
+                    <RibbonButton x:Name="cmdNeuerWettbewerb" Label="Neuer Wettbewerb" Command="{Binding NeuerWettbewerbCommand }" />
+                    <RibbonButton x:Name="cmdNeueSchuetze" Label="Neuer Schütze" Command="{Binding NeuerSchuetzeCommand}"/>
+                    <RibbonSeparator />
+                    <RibbonButton x:Name="cmdCreateExampleCSV" Label="Beispiel-CVS generieren" Command="{Binding ExportExampleSchuetzenCSVCommand }" />
+                    <RibbonButton x:Name="cmdImportSchuetzen" Label="Schützen aus CSV importieren" Command="{Binding SchuetzenImportierenCommand}"/>
+                </RibbonGroup>
+                <RibbonGroup Header="Auswertung">
+                    <RibbonButton x:Name="cmdAuswertung" Label="Auswertung Anzeigen" ToolTip="Zeigt die Auswertung für den gewählten Wettbewerb an" Command="{Binding AuswertungAnzeigenCommand}" CommandParameter="{Binding AktiverWettbewerb}" />
+
+                </RibbonGroup>
+            </RibbonTab>
+
+            <RibbonTab Header="{Binding AktiveSchießbahn.AnzeigeName}">
+                <RibbonGroup Header="Aktive Scheibe">
+                    <RibbonButton x:Name="cmdStarten" Label="Schießen Starten" ToolTip="Startet das Schießen für den gewählten Schützen" Command="{Binding AktiveSchießbahn.StartCommand}" CommandParameter="{Binding AktiverSchuetze}" />
+                    <RibbonButton x:Name="cmdModusWechseln" Label="Modus wechseln" Command="{Binding AktiveSchießbahn.ProbeWechselnCommand}"/>
+                    <RibbonButton x:Name="cmdFehlschuss" Label="Fehlschuss einfügen" Command="{Binding AktiveSchießbahn.FehlschussCommand}"/>
+                    <RibbonButton x:Name="cmdAuffuellen" Label="Scheibe Auffüllen" Command="{Binding AktiveSchießbahn.ScheibeAuffüllenCommand}"/>
+                </RibbonGroup>
+                <RibbonGroup Header="Empfangseinheit">
+                    <RibbonComboBox
+                        Label="Port">
+                        <RibbonGallery IsTextSearchEnabled="True"  MaxColumnCount="1"  SelectedItem="{Binding AktiveSchießbahn.SelectedPort}">
+                            <RibbonGalleryCategory ItemsSource="{Binding AktiveSchießbahn.Ports}"/>
+                        </RibbonGallery>
+                    </RibbonComboBox>
+                    <RibbonButton x:Name="cmdUpdatePorts" Label="Ports Aktualisieren" Command="{Binding AktiveSchießbahn.UpdatePortsCommand}" />
+                    <RibbonButton x:Name="cmdConnectEmpfaenger" Label="Verbinden" Command="{Binding AktiveSchießbahn.ConnectEmpfaengerCommand}" />
+                    <RibbonButton x:Name="cmdDisConnectEmpfaenger" Label="Trennen" Command="{Binding AktiveSchießbahn.DisconnectEmpfaengerCommand}" />
+                </RibbonGroup>
+                <!--<RibbonGroup Header="Webserver">
+                    <RibbonComboBox
+                        Label="URL">
+                        <RibbonGallery IsTextSearchEnabled="True"  MaxColumnCount="1"  SelectedItem="{Binding AktiveSchießbahn.WebURL}">
+                            <RibbonGalleryCategory ItemsSource="{Binding AktiveSchießbahn.WebURLs}"/>
+                        </RibbonGallery>
+                    </RibbonComboBox>
+                    <RibbonTextBox Label="Netzwerk-Port" Text="{Binding AktiveSchießbahn.WebPort, Mode=TwoWay}"/>
+                    <RibbonButton x:Name="cmdStartWebservice" Label="Webservice Starten" Command="{Binding AktiveSchießbahn.StartWebserviceCommand}" />
+                    <RibbonButton x:Name="cmdAddFirewall" Label="Firewall-Ausnahme erstellen" Command="{Binding AktiveSchießbahn.SetFirewallCommand}" />
+                    <RibbonButton x:Name="cmdRemoveFirewall" Label="Firewall-Ausnahme entfernen" Command="{Binding AktiveSchießbahn.RemoveFirewallCommand}" />
+
+                </RibbonGroup>-->
+            </RibbonTab>
+
+            
+            
+            
+        </Ribbon>
+
+        <Grid Grid.Row="1" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+
+                <!-- Für Splitter-->
+                <ColumnDefinition Width="Auto" />
+
+                <ColumnDefinition Width="3*" />
+                <!-- Für Splitter-->
+                <ColumnDefinition Width="Auto" />
+
+                <ColumnDefinition Width="Auto" MinWidth="30"  />
+                <ColumnDefinition Width="Auto" />
+
+            </Grid.ColumnDefinitions>
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns"></GridSplitter>
+
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" MinHeight="100"/>
+                </Grid.RowDefinitions>
+
+               
+
+                    <TextBlock Text="Wettbewerbe" Margin="5,5,5,5" FontWeight="Bold" FontSize="16" VerticalAlignment="Top"/>
+                    <Button Content="+" Command="{Binding NeuerWettbewerbCommand}" Margin="5"  HorizontalAlignment="Right" VerticalAlignment="Top" />
+
+                <ListView
+                        Margin="5,30,5,5"
+                        ItemsSource="{Binding Wettbewerbe}"
+                        SelectedItem="{Binding AktiverWettbewerb}"
+                        MinHeight="80">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                <TextBlock Text="{Binding Name}" DockPanel.Dock="Left" Margin="5" />
+                                <Button fa5:Awesome.Content="Regular_Edit" Margin="5"
+                                         Command="{Binding DataContext.BearbeiteWettbewerbCommand,  RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"                                        
+                                        CommandParameter="{Binding}" HorizontalAlignment="Right"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                        
+                </ListView>
+                
+                   
+
+                <GridSplitter Grid.Row="1" 
+                                Height="5" 
+                                HorizontalAlignment="Stretch" 
+                                VerticalAlignment="Stretch" 
+                                ResizeDirection="Rows" />
+
+
+                <TextBlock Grid.Row="2" Text="Schützen" FontWeight="Bold" FontSize="16" VerticalAlignment="Top" Margin="5"/>
+                <Button Grid.Row="2" Content="+" Command="{Binding NeueSchuetzenCommand}" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Top" />
+                
+                <TextBox Grid.Row="2"
+                        Margin="5,30,5,5" Text="{Binding SchuetzenNameFilter, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+
+                <ListView Grid.Row="2" 
+                         Margin="5,60,5,5"
+                         ItemsSource="{Binding Schuetzen}" 
+                         SelectedItem="{Binding AktiverSchuetze}">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                <TextBlock Text="{Binding AnzeigeName}" Margin="5" />
+                                <Button fa5:Awesome.Content="Regular_Edit" Command="{Binding DataContext.EditSchuetzeCommand,  RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" CommandParameter="{Binding}" Margin="5"/>
+                                
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+
+                <GridSplitter Grid.Row="3" 
+                                Height="5" 
+                                HorizontalAlignment="Stretch" 
+                                VerticalAlignment="Stretch" 
+                                ResizeDirection="Rows" />
+
+
+                <TextBlock Grid.Row="4" Text="Serien" FontWeight="Bold" FontSize="16" VerticalAlignment="Top" Margin="5"/>
+                <Button Grid.Row="4" Content=" + " Command="{Binding NeueSerieCommand}" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Top" />
+                <ListView Grid.Row="4" 
+                         Margin="5,30,5,5"
+                         ItemsSource="{Binding Serien}">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate DataType="{x:Type model:Serie}">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                <TextBlock Text="W: " Margin="5" />
+                                <TextBlock Text="{Binding AnzahlWertungsschuesse}" Margin="5" />
+                                <TextBlock Text="/ " Margin="5" />
+                                <TextBlock Text="{Binding SollAnzahlWertungsschuesse}" Margin="5" />
+                                <TextBlock Text="Schuss; " Margin="5" />
+                                <TextBlock Text="{Binding GesamtWertGanzzahl}" Visibility="{Binding Schuetze.Wettbewerb.Teilerwertung, Converter={StaticResource InvertBoolVisibleConverter}}" Margin="5" />
+                                <TextBlock Text="{Binding GesamtWertTeiler}" Visibility="{Binding Schuetze.Wettbewerb.Teilerwertung, Converter={StaticResource BoolVisibleConverter}}" Margin="5" />
+                                <TextBlock Text="Ring; " Margin="5" />
+                                <CheckBox IsChecked="{Binding SerieAbgeschlossen, Mode=OneWay}" ToolTip="Scheibe Abgeschlossen?"  IsEnabled="False"  Margin="5" />
+                                <!--Schussgeld bezahlen-->
+                                <!--<Button fa5:Awesome.Content="Solid_DollarSign" ToolTip="Schussgeld als Bezahlt markieren" 
+                                        Command="{Binding DataContext.SchussgeldBezahlenCommand,  RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"                                        
+                                        CommandParameter="{Binding}" Margin="5" HorizontalAlignment="Right" Visibility="{Binding SchussgeldBezahlt, Converter={StaticResource InvertBoolVisibleConverter}}" />-->
+                                <!-- Serie öffnen -->
+                                <Button fa5:Awesome.Content="Regular_Eye"  ToolTip="Ansehen" 
+                                        Command="{Binding DataContext.SerieAnzeigenCommand,  RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"                                        
+                                        CommandParameter="{Binding}" Margin="5" HorizontalAlignment="Right" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+
+
+            <TabControl TabStripPlacement="Top" Grid.Column="2" Grid.Row="2" Margin="1" ItemsSource="{Binding Schießbahnen}" SelectedItem="{Binding AktiveSchießbahn}">
+                <TabControl.ItemTemplate>
+                    <!-- this is the header template-->
+                    <DataTemplate>
+                        <TextBlock
+                Text="{Binding AnzeigeName }" />
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+                <TabControl.ContentTemplate>
+                    <!-- this is the body of the TabItem template-->
+                    <DataTemplate>
+                        <v:BahnView DataContext="{Binding}"></v:BahnView>
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
+
+            <GridSplitter
+                Grid.Column="3" Width="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns"></GridSplitter>
+
+            <TabControl TabStripPlacement="Right" Grid.Column="4"  Margin="1" ItemsSource="{Binding Fenster}" SelectedItem="{Binding AktivesFenster}" >
+                <TabControl.ItemTemplate>
+                    <!-- this is the header template-->
+                    <DataTemplate>
+                        <DockPanel>
+                            <TextBlock
+                                Text="{Binding AnzeigeName}" DockPanel.Dock="Left" />
+                            <Button fa5:Awesome.Content="Regular_WindowClose" Command="{Binding SchliessenCommand}" CommandParameter="{Binding}" />
+                        </DockPanel>                    
+                            
+                           
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+              
+                    
+                    <!-- this is the body of the TabItem template--><!--
+                    <DataTemplate>
+                        <ContentPresenter Content="{Binding}" />
+                    </DataTemplate>-->
+                
+
+            </TabControl>
+
+
+
+        </Grid>
+
+
+       
+                   
+        
+
+    </Grid>
+</Window>

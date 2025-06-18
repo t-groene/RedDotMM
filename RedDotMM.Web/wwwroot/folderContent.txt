@@ -1,0 +1,9 @@
+﻿# In dieser Datei müssen alle Dateien aufgelistet werden, die im Ordner "wwwroot" liegen.
+# Nicht aufgelistete Dateien werden nicht an Webclients übertragen.
+# Dies schließen Scripts, Bilder, CSS-Dateien und andere statische Dateien ein.
+# Die Reihenfolge der Dateien spielt keine Rolle.
+# Das Raute-Zeichen (#) am Anfang einer Zeile kennzeichnet einen Kommentar und wird ignoriert.
+
+index.html
+scripts.js
+styles.css
