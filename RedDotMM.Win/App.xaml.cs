@@ -2,6 +2,7 @@
 using RedDotMM.Logging;
 using System.Configuration;
 using System.Data;
+using System.Security.Policy;
 using System.Windows;
 
 namespace RedDotMM.Win
@@ -12,9 +13,13 @@ namespace RedDotMM.Win
     public partial class App : Application
     {
 
+        
+
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+        
             // Initialize the application, e.g., set up logging, load settings, etc.
             Logger.Instance.Log("Application started", LogType.Info);
 

@@ -57,20 +57,29 @@ namespace RedDotMM.Win.Model
 
         private void Empfaenger_SchussEmpfangen(EmpfangenerSchuss schuss)
         {
+           var addSchussAction = new Action(() => AddSchuss(schuss));
+            Application.Current.Dispatcher.Invoke(addSchussAction, System.Windows.Threading.DispatcherPriority.Normal);
+            //addSchussAction.BeginInvoke(null, null); // Asynchronous call to add the shot
+        }
+
+
+        private void AddSchuss(EmpfangenerSchuss schuss)
+        {
             try
             {
                 if (Scheibe != null)
                 {
                     var count = Scheibe.Ergebnis.Schuesse.Count;
 
-                    var s = new Schuss {
-                        Wert  = (decimal)schuss.Wert,
+                    var s = new Schuss
+                    {
+                        Wert = (decimal)schuss.Wert,
                         X = schuss.X,
                         Y = schuss.Y,
                         Distanz = schuss.Distanz,
                         Zeitstempel = schuss.Zeitstempel,
-                         LfdSchussNummer = count + 1 // Nächste laufende Nummer für den Schuss
-                    } ;
+                        LfdSchussNummer = count + 1 // Nächste laufende Nummer für den Schuss
+                    };
                     Scheibe.AddSchuss(s);
                     // Aktualisiere die Anzeige
                     OnPropertyChanged(nameof(Scheibe));
@@ -79,12 +88,15 @@ namespace RedDotMM.Win.Model
                     OnUpdateRequested();
 
                 }
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Logger.Instance.Log($"Fehler beim Empfangen eines Schusses: {ex.Message}", Logging.LogType.Fehler);
                 MessageBox.Show($"Fehler beim Empfangen eines Schusses: {ex.Message}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+
 
         public string[] Ports
         {

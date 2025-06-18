@@ -90,37 +90,7 @@ namespace RedDotMM.Model
         }
 
 
-        [NotMapped]
-        public decimal GesamtWertTeiler
-        {
-            get
-            {
-                if (Ergebnisse == null || Ergebnisse.Count == 0)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return Ergebnisse.Sum(e => e.Schuesse.Where(s => s.Typ == SchussTyp.Wertung).Sum(s => Math.Abs(s.Wert)));
-                }
-            }
-        }
-
-        [NotMapped]
-        public decimal GesamtWertGanzzahl
-        {
-            get
-            {
-                if (Ergebnisse == null || Ergebnisse.Count == 0)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return Ergebnisse.Sum(e => e.Schuesse.Where(s => s.Typ == SchussTyp.Wertung).Sum(s => Math.Round(s.Wert, 2)));
-                }
-            }
-        }
+      
 
         public override string ToString()
 

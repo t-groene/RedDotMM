@@ -19,19 +19,26 @@
               Grid.Row="0"
               Margin="10"
                 HorizontalAlignment="Stretch"
-                VerticalAlignment="Top">
+                VerticalAlignment="Top"
+             Height="100">
              <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="8*" />
                 <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Vertical" Grid.Column="0">
-                <TextBlock Text="{Binding AnzeigeName}" FontSize="24" FontWeight="Bold" />
-                <TextBlock Text="{Binding Scheibe.Ergebnis.Schuetze.Wettbewerb.Name}" FontSize="24" FontWeight="Bold" />
-                <TextBlock Text="Scheibe abgeschlossen!" HorizontalAlignment="Center" Foreground="Green" FontSize="24" FontWeight="Bold"
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="{Binding AnzeigeName}" FontSize="24" FontWeight="Bold" />
+                <TextBlock Grid.Row="1"  Text="{Binding Scheibe.Ergebnis.Schuetze.Wettbewerb.Name}" FontSize="16" FontWeight="Bold" />
+                <TextBlock Grid.Row="2"  Text="Scheibe abgeschlossen!" HorizontalAlignment="Center" Foreground="Green" FontSize="16" FontWeight="Bold"
                            Visibility="{Binding Scheibe.Ergebnis.ErgebnisAbgeschlossen, Converter={StaticResource BoolVisibleConverter}}"/>
-                <TextBlock Text="Serie abgeschlossen!" HorizontalAlignment="Center" Foreground="Green" FontSize="24" FontWeight="Bold" 
+                <TextBlock  Grid.Row="3" Text="Serie abgeschlossen!" HorizontalAlignment="Center" Foreground="Green" FontSize="16" FontWeight="Bold" 
                             Visibility="{Binding Scheibe.Ergebnis.Serie.SerieAbgeschlossen, Converter={StaticResource BoolVisibleConverter}}"/>
-            </StackPanel>
+            </Grid>
             <StackPanel Orientation="Vertical" Grid.Column="1">
                 
                 <StackPanel Orientation="Horizontal">

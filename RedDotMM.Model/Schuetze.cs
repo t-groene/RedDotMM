@@ -37,14 +37,23 @@ namespace RedDotMM.Model
         [NotMapped]
         public string AnzeigeName { get
             {
+                if (string.IsNullOrEmpty(Name))
+                {
+                    return "Neuer Schütze";
+                }
+                string s = "";
+                if (LfdNummer != null)
+                {
+                    s = $"{LfdNummer} - ";
+                }
 
                 if (string.IsNullOrEmpty(Zusatz))
                 {
-                    return $"{LfdNummer} - {Name}, {Vorname}";
+                    return $"{s}{Name}, {Vorname}";
                 }
                 else
                 {
-                    return $"{LfdNummer} - {Name}, {Vorname}\n({Zusatz})";
+                    return $"{s}{Name}, {Vorname}\n({Zusatz})";
                 }
             }
         }

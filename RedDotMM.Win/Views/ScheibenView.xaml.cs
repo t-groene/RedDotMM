@@ -70,7 +70,7 @@ namespace RedDotMM.Win.Views
                     var model = this.DataContext as Model.ScheibeViewModel;
                     if (model != null)
                     {
-                        if (model.Ergebnis != null && model.Ergebnis.Serie != null && model.Ergebnis.Serie.Schuetze != null)
+                        if (model.Ergebnis != null && model.Ergebnis.Serie != null && model.Ergebnis.Serie.Schuetze != null && model.Ergebnis.Serie.Schuetze.Wettbewerb!=null)
                         {
                             UIHelper.Scheibenzeichner.ZeichneScheibe(this.CanvScheibe, model.Ergebnis, model.Probe, model.Ergebnis.Serie.Schuetze.Wettbewerb.Teilerwertung);
                         }

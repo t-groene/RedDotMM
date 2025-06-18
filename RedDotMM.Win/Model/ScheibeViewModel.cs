@@ -21,6 +21,8 @@ namespace RedDotMM.Win.Model
         public event EventHandler? ScheibeChanged;
 
 
+        public event EventHandler? ScheibeDrucken;
+
         public ScheibeViewModel(RedDotMM_Context context)
         {
             this.context = context;

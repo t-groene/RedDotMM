@@ -11,9 +11,14 @@
    <Application.Resources>  
 
        <fa5:ImageSourceConverter x:Key="FaImageConverter" />
-       
-       
-       <!-- Visibility Converter-->
+
+        <fa5:DrawingConverter x:Key="DrawingConverter"/>
+
+        <SolidColorBrush x:Key="SolidRedBrush" Color="Red" />
+        <SolidColorBrush x:Key="SolidGreenBrush" Color="Green" />
+        <SolidColorBrush x:Key="SolidDefaultBrush" Color="DarkBlue" />
+
+        <!-- Visibility Converter-->
 
         <helper:BoolVisibleConverter x:Key="BoolVisibleConverter" FalseValue="Collapsed" TrueValue="Visible" />
         <helper:BoolVisibleConverter x:Key="InvertBoolVisibleConverter" FalseValue="Visible" TrueValue="Collapsed" />

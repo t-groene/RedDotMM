@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -48,6 +50,14 @@ namespace RedDotMM.Win.Model
            
 
         }
+
+
+        public string WindowTitle
+        {
+            get => $"RedDotMM - Wettkampfverwaltung (Version {Assembly.GetExecutingAssembly().GetName().Version})";
+        }
+
+
 
         private void Schießbahn_UpdateRequested(object? sender, EventArgs e)
         {
@@ -238,10 +248,10 @@ namespace RedDotMM.Win.Model
                         context.Serien
                         .Where(s => s.SchuetzeID == AktiverSchuetze.SchuetzenId)
                         .Include(s => s.Schuetze)
-                        .ThenInclude(s => s.Wettbewerb)                        
+                        .ThenInclude(s => s.Wettbewerb)
                         .Include(s => s.Ergebnisse)
                         .ThenInclude(e => e.Schuesse)
-                        );                       
+                        .ToList());                   
                         
                 }
             }
@@ -414,6 +424,47 @@ namespace RedDotMM.Win.Model
             }
         }
 
+
+        private ICommand _BeendenCommand;
+        public ICommand BeendenCommand
+        {
+            get
+            {
+                if (_BeendenCommand == null)
+                {
+                    _BeendenCommand = new RelayCommand(()=>
+                    {
+                        Application.Current.Shutdown();
+                    }
+                    , () => true);
+                }
+                return _BeendenCommand;
+            }
+        }
+
+        private ICommand _InfoCommand;
+        public ICommand InfoCommand
+        {
+            get
+            {
+                if (_InfoCommand == null)
+                {
+                    _InfoCommand = new RelayCommand(() =>
+                    {
+                        MessageBox.Show($"RedDotMM - Wettkampfverwaltung\nVersion: {Assembly.GetExecutingAssembly().GetName().Version} " +
+                            "Software-Alternative zur DISAG RedDot Software für die Verwendung mit DISAG Bluetooth Empfänger\n"+
+                            "Projekt unter MIT-Lizenz\n" +
+                            "Weitere Infos: https://github.com/t-groene/RedDotMM", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }, () => true);
+                }
+                return _InfoCommand;
+            }
+        }
+
+
+
+
+
         private ICommand _SchussgeldBezahlenCommand;
         public ICommand SchussgeldBezahlenCommand
         {
@@ -431,18 +482,27 @@ namespace RedDotMM.Win.Model
         {
             try
             {
-                if(serie == null || !(serie is Serie s))
+
+
+                if (serie == null || !(serie is Serie s))
                 {
                     MessageBox.Show("Bitte eine Serie auswählen, um das Schussgeld zu bezahlen.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                     return;
                 }
 
-                using(var context = new RedDotMM_Context())
+                Guid id = ((serie as Serie)?.SerienId) ?? Guid.Empty;
+                if (id == Guid.Empty)
+                {
+                    MessageBox.Show("Die ausgewählte Serie ist ungültig.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                using (var context = new RedDotMM_Context())
                 {
                     var serieInDb = context.Serien
-                        .Where (s=> s.SerienId == s.SerienId)
+                        .Where(s => s.SerienId == id)
                         .Include(s => s.Schuetze)
-                        .ThenInclude(s=>s.Wettbewerb)
+                        .ThenInclude(s => s.Wettbewerb)
                         .FirstOrDefault();
                     if (serieInDb == null)
                     {
@@ -450,19 +510,23 @@ namespace RedDotMM.Win.Model
                         return;
                     }
 
-                    if(MessageBox.Show($"Möchten Sie das Schussgeld in Höhe von {serieInDb.Schuetze.Wettbewerb.SchussGeld:c} für diese Serie für  '{serieInDb.Schuetze.AnzeigeName}' als Bezahlt vermerken?", "Schussgeld bezahlen", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                    if (MessageBox.Show($"Möchten Sie das Schussgeld in Höhe von {serieInDb.Schuetze.Wettbewerb.SchussGeld:c} für diese Serie für  '{serieInDb.Schuetze.AnzeigeName}' als Bezahlt vermerken?", "Schussgeld bezahlen", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
                     {
                         return; // Abbrechen, wenn der Benutzer nicht bezahlen möchte
                     }
                     // Schussgeld bezahlen
 
 
-                    serieInDb.SchussgeldBezahlt =true;
+                    serieInDb.SchussgeldBezahlt = true;
                     context.Update(serieInDb);
                     context.SaveChanges();
                     OnPropertyChanged(nameof(Serien)); // Aktualisiere die Serienliste, damit die Änderungen angezeigt werden
 
                 }
+
+
+            
+
 
 
 

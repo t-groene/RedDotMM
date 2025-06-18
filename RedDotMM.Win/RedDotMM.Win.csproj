@@ -6,10 +6,15 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+	<Version>0.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Control\ScheibenControl.xaml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Ressources\Images\splash.jpeg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +41,10 @@
 
   <ItemGroup>
     <Folder Include="Control\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SplashScreen Include="Ressources\Images\splash.jpeg" />
   </ItemGroup>
 
 </Project>

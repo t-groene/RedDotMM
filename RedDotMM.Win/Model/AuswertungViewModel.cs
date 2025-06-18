@@ -1,4 +1,5 @@
-﻿using RedDotMM.CommonHelper;
+﻿using Microsoft.EntityFrameworkCore;
+using RedDotMM.CommonHelper;
 using RedDotMM.Model;
 using RedDotMM.Win.Data;
 using System;
@@ -152,9 +153,13 @@ namespace RedDotMM.Win.Model
 
                     var auswertung = context.Serien.Where(s => s.Schuetze.WettbewerbID == WettbewerbsID
                     && s.SerieAbgeschlossen)
+                        .Include(s => s.Ergebnisse)
+                        .ThenInclude(e => e.Schuesse)
+                        .Include(s => s.Schuetze)
+                        .ThenInclude(s => s.Wettbewerb)
                         .Select(e => new AuswertungsItemViewModel
                         {
-                            SerienID= e.SerienId,
+                            SerienID = e.SerienId,
                             Name = e.Schuetze.Name,
                             Vorname = e.Schuetze.Vorname,
                             Zusatz = e.Schuetze.Zusatz,
@@ -163,29 +168,13 @@ namespace RedDotMM.Win.Model
                             AnzahlWertungsschuesse = e.AnzahlWertungsschuesse,
                             SchussgeldBezahlt = e.SchussgeldBezahlt ? w.SchussGeld : 0,
                             GesamtErgebnis = -1 // Wird später berechnet
-                        });
+                        }).ToList();
 
                     foreach(var item in auswertung)
                     {
                         // Berechnung des GesamtErgebnisses
 
-                        decimal? wert;
-                        if (w.Teilerwertung)
-                        {
-                            wert = context.Serien.FirstOrDefault(s => s.SerienId == item.SerienID)?.GesamtWertTeiler;
-                        }
-                        else
-                        {
-                            wert = context.Serien.FirstOrDefault(s => s.SerienId == item.SerienID)?.GesamtWertGanzzahl;
-                        }
-                        if(wert.HasValue)
-                        {
-                            item.GesamtErgebnis = wert.Value;
-                        }
-                        else
-                        {
-                            item.GesamtErgebnis = 0; // Falls kein Wert vorhanden ist, auf 0 setzen
-                        }
+                        item.GesamtErgebnis = Helper.GesamtwertHelper.getGesamtwert(item.SerienID);
 
                     }
 
