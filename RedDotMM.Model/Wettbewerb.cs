@@ -15,7 +15,7 @@ namespace RedDotMM.Model
         public string Name {get; set; }
 
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}")]
-        public DateTime Datum { get; set; }
+        public DateTime Datum { get; set; } = DateTime.Now; // Datum des Wettbewerbs, Standard ist das aktuelle Datum
 
         /// <summary>
         /// Anzahl der Probeschüsse in diesem Wettbewerb
@@ -58,7 +58,7 @@ namespace RedDotMM.Model
             }
             if (Datum == default)
             {
-                yield return new ValidationResult("Das Datum des Wettbewerbs muss ein gültiges Datum sein.", new[] { nameof(Datum) });
+                yield return new ValidationResult("Das Datum des Wettbewerbs muss ein gültiges Datum sein.", new[] { nameof(Datum) }); 
             }
             if (AnzahlProbeschuss < 0)
             {

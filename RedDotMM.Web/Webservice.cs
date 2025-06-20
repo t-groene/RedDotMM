@@ -8,6 +8,7 @@ using RedDotMM.Logging;
 using System.Diagnostics;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Text.Json.Serialization;
+using RedDotMM.Web.Model;
 
 namespace RedDotMM.Web
 {
@@ -24,6 +25,11 @@ namespace RedDotMM.Web
 
         public event Action<Guid> ScheibeAuffuellen;
 
+
+
+        #region Daten
+
+
         private Ergebnis _ergebnis;
         public Ergebnis Ergebnis
         {
@@ -36,6 +42,33 @@ namespace RedDotMM.Web
                     OnPropertyChanged(nameof(Ergebnis));
                     TriggerWebhook();
                 }
+            }
+        }
+
+
+        private ScheibeModel ScheibeModel
+        {
+            get
+            {
+                if (Ergebnis != null)
+                {
+                    return new ScheibeModel
+                    {
+                        SchuetzeName = Ergebnis.Serie?.Schuetze?.AnzeigeName ?? "Unbekannt",
+                        WettkampfName = Ergebnis.Serie?.Schuetze?.Wettbewerb?.Name ?? "Unbekannt",
+                        SchiebenNummer = Ergebnis.LfdNummer,
+                        Teilerwertung = Ergebnis.Serie?.Schuetze?.Wettbewerb?.Teilerwertung ?? false,
+                        Schuesse = Ergebnis.Schuesse.Select(s => new SchussModel
+                        {
+                            Ringzahl = s.Wert,
+                            IsProbe = s.Typ == SchussTyp.Probe,
+                            x = s.X,
+                            y = s.Y,
+                             SchussNummer =s.LfdSchussNummer
+                        }).ToArray()
+                    };
+                }
+                return null;
             }
         }
 
@@ -57,6 +90,9 @@ namespace RedDotMM.Web
                 }
             }
         }
+
+        #endregion Daten    
+
 
         private void OnPropertyChanged(string v)
         {
@@ -96,7 +132,7 @@ namespace RedDotMM.Web
                     .Select(ip => $"http://{ip}:{Port}/")
                     .ToList();
                 urls.Add($"http://localhost:{Port}/");
-                urls.Add($"http://+:{Port}/");
+                //urls.Add($"http://+:{Port}/");
                 return urls.Distinct().ToArray();
             }
             catch (Exception ex)
@@ -178,6 +214,8 @@ namespace RedDotMM.Web
                     return;
                 }
 
+
+
                 this._url = url.Trim();
                 if (_url.StartsWith("http://") || _url.StartsWith("https://"))
                 {
@@ -188,15 +226,25 @@ namespace RedDotMM.Web
                     throw new ArgumentException("Die URL muss mit 'http://' oder 'https://' beginnen.");
                 }
 
+
+                int port;
+                int PortNoINdex = url.IndexOf(':',6) + 1;
+                if (!(Int32.TryParse(_url.Substring(PortNoINdex).TrimEnd('/'), out port)))
+                {
+                    port = 80;
+                }
+
+                var formattedUrl = $"http://+:{port}/";
+
                 _webhookUrl = _url + "webhook";
 
-                SetUrlRichtlinie();
+                SetUrlRichtlinie(port);
 
 
                 //this._webhookUrl = _webhookUrl.TrimEnd('/') + "/webhook/";
                 _listener = new HttpListener();
 
-                _listener.Prefixes.Add(_url);
+                _listener.Prefixes.Add(formattedUrl);
                 _listener.Start();
                 Console.WriteLine($"Webserver gestartet unter {_url}");
 
@@ -220,7 +268,7 @@ namespace RedDotMM.Web
         }
 
 
-        private void SetUrlRichtlinie()
+        private void SetUrlRichtlinie(int port)
         {
 
 
@@ -230,8 +278,10 @@ namespace RedDotMM.Web
                 string user = $"{Environment.UserDomainName}\\{Environment.UserName}";
 
                 // URL auf das richtige Format bringen (z.B. http://+:7070/)
-                string formattedUrl = _url;
-               
+                //string formattedUrl = _url;
+                var formattedUrl = $"http://+:{port}/";
+
+
                 string arguments = $"http add urlacl url={formattedUrl} user=\"{user}\" listen=yes";
 
                 Process.Start(new ProcessStartInfo
@@ -305,6 +355,10 @@ namespace RedDotMM.Web
                 else if (request.Url.AbsolutePath == "/api/bild")
                 {
                     ServeBild(response);
+                }
+                else if (request.Url.AbsolutePath == "/webhook")
+                {
+                   //nix machen
                 }
 
                 else if (request.Url.AbsolutePath == "/")
@@ -393,10 +447,19 @@ namespace RedDotMM.Web
             response.ContentType = "image/png"; // Oder das entsprechende Bildformat
             response.OutputStream.Write(ScheibenBild, 0, ScheibenBild.Length);
         }
+
+
+
         private void ServeErgebniss(HttpListenerResponse response)
         {
 
-            var json = JsonSerializer.Serialize(Ergebnis);
+
+            JsonSerializerOptions options = new()
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+                WriteIndented = true
+            };
+            var json = JsonSerializer.Serialize(ScheibeModel, options);
             var buffer = Encoding.UTF8.GetBytes(json);
             response.ContentType = "application/json";
             response.OutputStream.Write(buffer, 0, buffer.Length);
@@ -432,6 +495,10 @@ namespace RedDotMM.Web
         {
             try
             {
+
+                if (_listener==null || !_listener.IsListening)
+                    return;
+
                 JsonSerializerOptions options = new()
                 {
                     ReferenceHandler = ReferenceHandler.Preserve,

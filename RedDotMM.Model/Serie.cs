@@ -110,8 +110,31 @@ namespace RedDotMM.Model
             catch (Exception ex)
             {
                 return $"Serie {SerienId}";
+           
             }
 
         }
+
+
+
+       
+        private decimal _RingZahl = -1;
+
+        [NotMapped]
+        /// <summary>
+        /// Eigenschaft, um die Ringzahl temporär zu merken. Wird nich in der DB gespeichert!
+        /// </summary>
+        public decimal RingZahl
+        {
+            get
+            {
+                return _RingZahl;
+            }
+            set
+            {
+                _RingZahl = value;
+            }
+        }
+
     }
 }

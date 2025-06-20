@@ -141,7 +141,7 @@
                     <RibbonButton x:Name="cmdConnectEmpfaenger" Label="Verbinden" Command="{Binding AktiveSchießbahn.ConnectEmpfaengerCommand}" />
                     <RibbonButton x:Name="cmdDisConnectEmpfaenger" Label="Trennen" Command="{Binding AktiveSchießbahn.DisconnectEmpfaengerCommand}" />
                 </RibbonGroup>
-                <!--<RibbonGroup Header="Webserver">
+                <RibbonGroup Header="Webserver">
                     <RibbonComboBox
                         Label="URL">
                         <RibbonGallery IsTextSearchEnabled="True"  MaxColumnCount="1"  SelectedItem="{Binding AktiveSchießbahn.WebURL}">
@@ -153,7 +153,7 @@
                     <RibbonButton x:Name="cmdAddFirewall" Label="Firewall-Ausnahme erstellen" Command="{Binding AktiveSchießbahn.SetFirewallCommand}" />
                     <RibbonButton x:Name="cmdRemoveFirewall" Label="Firewall-Ausnahme entfernen" Command="{Binding AktiveSchießbahn.RemoveFirewallCommand}" />
 
-                </RibbonGroup>-->
+                </RibbonGroup>
             </RibbonTab>
 
             
@@ -190,7 +190,8 @@
                
 
                     <TextBlock Text="Wettbewerbe" Margin="5,5,5,5" FontWeight="Bold" FontSize="16" VerticalAlignment="Top"/>
-                    <Button Content="+" Command="{Binding NeuerWettbewerbCommand}" Margin="5"  HorizontalAlignment="Right" VerticalAlignment="Top" />
+                    <Button Command="{Binding NeuerWettbewerbCommand}" Margin="5"  HorizontalAlignment="Right" VerticalAlignment="Top"
+                            fa5:Awesome.Content="Solid_PlusCircle"   Style="{StaticResource SquareButtonStyle}"/>
 
                 <ListView
                         Margin="5,30,5,5"
@@ -204,12 +205,18 @@
                     </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                                <TextBlock Text="{Binding Name}" DockPanel.Dock="Left" Margin="5" />
+                            <Grid HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="8*" />
+                                    <ColumnDefinition  Width="2*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding Name}"  Margin="5" />
                                 <Button fa5:Awesome.Content="Regular_Edit" Margin="5"
+                                        Grid.Column="1"
                                          Command="{Binding DataContext.BearbeiteWettbewerbCommand,  RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"                                        
-                                        CommandParameter="{Binding}" HorizontalAlignment="Right"/>
-                            </StackPanel>
+                                        CommandParameter="{Binding}" HorizontalAlignment="Right"
+                                        Style="{StaticResource SquareButtonStyle}"/>
+                            </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                         
@@ -225,7 +232,8 @@
 
 
                 <TextBlock Grid.Row="2" Text="Schützen" FontWeight="Bold" FontSize="16" VerticalAlignment="Top" Margin="5"/>
-                <Button Grid.Row="2" Content="+" Command="{Binding NeueSchuetzenCommand}" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Top" />
+                <Button Grid.Row="2"  Command="{Binding NeuerSchuetzeCommand}" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        fa5:Awesome.Content="Solid_PlusCircle"   Style="{StaticResource SquareButtonStyle}" IsEnabled="False"/>
                 
                 <TextBox Grid.Row="2"
                         Margin="5,30,5,5" Text="{Binding SchuetzenNameFilter, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
@@ -241,11 +249,15 @@
                     </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                                <TextBlock Text="{Binding AnzeigeName}" Margin="5" />
-                                <Button fa5:Awesome.Content="Regular_Edit" Command="{Binding DataContext.EditSchuetzeCommand,  RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" CommandParameter="{Binding}" Margin="5"/>
+                            <Grid HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="8*" />
+                                    <ColumnDefinition  Width="2*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding AnzeigeName}" Margin="5"  />
+                                <Button Grid.Column="1" fa5:Awesome.Content="Regular_Edit" Command="{Binding DataContext.EditSchuetzeCommand,  RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" CommandParameter="{Binding}" Margin="5"/>
                                 
-                            </StackPanel>
+                            </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
@@ -270,25 +282,33 @@
                     </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type model:Serie}">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                                <TextBlock Text="W: " Margin="5" />
-                                <TextBlock Text="{Binding AnzahlWertungsschuesse}" Margin="5" />
-                                <TextBlock Text="/ " Margin="5" />
-                                <TextBlock Text="{Binding SollAnzahlWertungsschuesse}" Margin="5" />
-                                <TextBlock Text="Schuss; " Margin="5" />
-                                <TextBlock Text="{Binding GesamtWertGanzzahl}" Visibility="{Binding Schuetze.Wettbewerb.Teilerwertung, Converter={StaticResource InvertBoolVisibleConverter}}" Margin="5" />
-                                <TextBlock Text="{Binding GesamtWertTeiler}" Visibility="{Binding Schuetze.Wettbewerb.Teilerwertung, Converter={StaticResource BoolVisibleConverter}}" Margin="5" />
-                                <TextBlock Text="Ring; " Margin="5" />
-                                <CheckBox IsChecked="{Binding SerieAbgeschlossen, Mode=OneWay}" ToolTip="Scheibe Abgeschlossen?"  IsEnabled="False"  Margin="5" />
+                            <Grid HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="8*" />
+                                    <ColumnDefinition  Width="1*" />
+                                    <ColumnDefinition  Width="1*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                    <TextBlock Text="Wertungsschüsse: " Margin="5,5,0,5" />
+                                    <TextBlock Text="{Binding AnzahlWertungsschuesse}" Margin="0,5,0,5" />
+                                    <TextBlock Text=" von " Margin="0,5,0,5" />
+                                    <TextBlock Text="{Binding SollAnzahlWertungsschuesse}" Margin="0,5,0,5" />
+                                    <TextBlock Text="; " Margin="0,5,5,5" />
+                                    <TextBlock Text="{Binding RingZahl}" Margin="5" />
+                                    <TextBlock Text="Ring; " Margin="0,5,0,5" />
+                                    <CheckBox IsChecked="{Binding SerieAbgeschlossen, Mode=OneWay}" ToolTip="Scheibe Abgeschlossen?"  IsEnabled="False"  Margin="5" />
+                                </StackPanel>
+
                                 <!--Schussgeld bezahlen-->
-                                <Button fa5:Awesome.Content="Solid_DollarSign" ToolTip="Schussgeld als Bezahlt markieren" 
+                                <Button Grid.Column="1" fa5:Awesome.Content="Solid_DollarSign" ToolTip="Schussgeld als Bezahlt markieren" Style="{StaticResource SquareButtonStyle}"
                                         Command="{Binding DataContext.SchussgeldBezahlenCommand,  RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"                                        
                                         CommandParameter="{Binding}" Margin="5" HorizontalAlignment="Right" Visibility="{Binding SchussgeldBezahlt, Converter={StaticResource InvertBoolVisibleConverter}}" />
-                                <!-- Serie öffnen -->
-                                <Button fa5:Awesome.Content="Regular_Eye"  ToolTip="Ansehen" 
+                                    <!-- Serie öffnen -->
+                                    <Button Grid.Column="2" fa5:Awesome.Content="Regular_Eye"  ToolTip="Ansehen" Style="{StaticResource SquareButtonStyle}"
                                         Command="{Binding DataContext.SerieAnzeigenCommand,  RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"                                        
                                         CommandParameter="{Binding}" Margin="5" HorizontalAlignment="Right" />
-                            </StackPanel>
+                               
+                            </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
@@ -325,7 +345,7 @@
                                     <RotateTransform Angle="-90" />
                                 </TextBlock.LayoutTransform>
                             </TextBlock>
-                            <Button fa5:Awesome.Content="Regular_WindowClose" Command="{Binding SchliessenCommand}" CommandParameter="{Binding}" HorizontalAlignment="Right" VerticalAlignment="Top" />
+                            <Button fa5:Awesome.Content="Regular_WindowClose" Command="{Binding SchliessenCommand}" CommandParameter="{Binding}" HorizontalAlignment="Right" VerticalAlignment="Top" Style="{StaticResource SquareButtonStyle}" />
                         </StackPanel>
 
 

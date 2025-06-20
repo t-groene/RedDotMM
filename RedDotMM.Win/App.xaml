@@ -12,43 +12,114 @@
 
        <fa5:ImageSourceConverter x:Key="FaImageConverter" />
 
-        <fa5:DrawingConverter x:Key="DrawingConverter"/>
-
-        <SolidColorBrush x:Key="SolidRedBrush" Color="Red" />
-        <SolidColorBrush x:Key="SolidGreenBrush" Color="Green" />
-        <SolidColorBrush x:Key="SolidDefaultBrush" Color="DarkBlue" />
-
-        <!-- Visibility Converter-->
-
-        <helper:BoolVisibleConverter x:Key="BoolVisibleConverter" FalseValue="Collapsed" TrueValue="Visible" />
-        <helper:BoolVisibleConverter x:Key="InvertBoolVisibleConverter" FalseValue="Visible" TrueValue="Collapsed" />
-
-        <!-- Fix: Wrap the BahnView in a DataTemplate.VisualTree to avoid multiple VisualTree definitions -->
-        <DataTemplate DataType="{x:Type vm:Schießbahn}">           
-                <v:BahnView></v:BahnView>           
-        </DataTemplate>
-
-        <DataTemplate DataType="{x:Type vm:ScheibeViewModel}">
-            <v:ScheibenView></v:ScheibenView>
-        </DataTemplate>
-
-        <DataTemplate DataType="{x:Type vm:WettbewerbViewModel}">
-            <v:WettbewerbView></v:WettbewerbView>
-        </DataTemplate>
-
-        <DataTemplate DataType="{x:Type vm:SchuetzeViewModel}">
-            <v:SchuetzeView></v:SchuetzeView>
-        </DataTemplate>
+       <fa5:DrawingConverter x:Key="DrawingConverter"/>
 
 
+        <Color x:Key="DefaultColor" >DarkBlue</Color>
+        <Color x:Key="SecondaryColor">LightBlue </Color>
+       
+       <SolidColorBrush x:Key="SolidRedBrush" Color="Red" />
+       <SolidColorBrush x:Key="SolidGreenBrush" Color="Green" />
+       <SolidColorBrush x:Key="SolidDefaultBrush"  Color="{StaticResource DefaultColor}"/>
+        <SolidColorBrush x:Key="SolidDefaulDisabledtBrush" Color="{StaticResource SecondaryColor}" />
 
-        <DataTemplate DataType="{x:Type vm:SerienViewModel}">
-            <v:SerienView></v:SerienView>
-        </DataTemplate>
+      
 
-        <DataTemplate DataType="{x:Type vm:AuswertungViewModel}">
-            <v:AuswertungView></v:AuswertungView>
-        </DataTemplate>
+       <!-- Visibility Converter-->
 
-    </Application.Resources>  
+       <helper:BoolVisibleConverter x:Key="BoolVisibleConverter" FalseValue="Collapsed" TrueValue="Visible" />
+       <helper:BoolVisibleConverter x:Key="InvertBoolVisibleConverter" FalseValue="Visible" TrueValue="Collapsed" />
+
+       <!-- Fix: Wrap the BahnView in a DataTemplate.VisualTree to avoid multiple VisualTree definitions -->
+       <DataTemplate DataType="{x:Type vm:Schießbahn}">           
+               <v:BahnView></v:BahnView>           
+       </DataTemplate>
+
+       <DataTemplate DataType="{x:Type vm:ScheibeViewModel}">
+           <v:ScheibenView></v:ScheibenView>
+       </DataTemplate>
+
+       <DataTemplate DataType="{x:Type vm:WettbewerbViewModel}">
+           <v:WettbewerbView></v:WettbewerbView>
+       </DataTemplate>
+
+       <DataTemplate DataType="{x:Type vm:SchuetzeViewModel}">
+           <v:SchuetzeView></v:SchuetzeView>
+       </DataTemplate>
+
+       <DataTemplate DataType="{x:Type vm:SerienViewModel}">
+           <v:SerienView></v:SerienView>
+       </DataTemplate>
+
+       <DataTemplate DataType="{x:Type vm:AuswertungViewModel}">
+           <v:AuswertungView></v:AuswertungView>
+       </DataTemplate>
+
+
+
+
+        <!-- Button Style: Quadratisch, runde Ecken, Rand und Foreground = SolidDefaultBrush, Hintergrund hellgrau -->
+        <Style TargetType="Button" x:Key="SquareButtonStyle">            
+            <!--<Setter Property="Width" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualHeight}"/>-->            
+            <!--<Setter Property="Foreground" Value="{StaticResource SolidDefaultBrush}"/>-->
+            <Setter Property="Width" Value="20"/>
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Padding" Value="3"/>
+            <Setter Property="Background" Value="#FFE5E5E5"/>
+            <Setter Property="BorderBrush" Value="{StaticResource SolidDefaultBrush}"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border 
+                     Background="{TemplateBinding Background}" 
+                     BorderBrush="{TemplateBinding BorderBrush}" 
+                     BorderThickness="{TemplateBinding BorderThickness}"                      
+                     CornerRadius="8">
+                            <ContentPresenter 
+                         HorizontalAlignment="Center" 
+                         VerticalAlignment="Center" 
+                         RecognizesAccessKey="True" >                               
+                            </ContentPresenter>
+                            <!--<VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
+                                        <Storyboard>
+                                            <ColorAnimation To="{StaticResource DefaultColor}" 
+                                 Storyboard.TargetProperty="(Button.Foreground).(SolidColorBrush.Color)"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="MouseOver">
+                                        <Storyboard>
+                                            <ColorAnimation To="#FFB0C4DE" 
+                                 Storyboard.TargetProperty="(Button.Foreground).(SolidColorBrush.Color)"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <ColorAnimation To="#FF87CEFA" 
+                                 Storyboard.TargetProperty="(Button.Foreground).(SolidColorBrush.Color)"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <ColorAnimation To="{StaticResource SecondaryColor }" 
+                                 Storyboard.TargetProperty="(Button.Foreground).(SolidColorBrush.Color)"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>-->
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            
+            
+            
+        </Style>
+
+
+
+    </Application.Resources>
 </Application>

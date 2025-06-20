@@ -3,6 +3,7 @@ using RedDotMM.CommonHelper;
 using RedDotMM.Logging;
 using RedDotMM.Model;
 using RedDotMM.Win.Data;
+using RedDotMM.Win.Helper;
 using RedDotMM.Win.UIHelper;
 using System;
 using System.Collections.Generic;
@@ -244,14 +245,22 @@ namespace RedDotMM.Win.Model
                 }
                 using (var context = new Data.RedDotMM_Context())
                 {
-                    return new ObservableCollection<Serie>(
-                        context.Serien
+
+                    var serien = context.Serien
                         .Where(s => s.SchuetzeID == AktiverSchuetze.SchuetzenId)
                         .Include(s => s.Schuetze)
                         .ThenInclude(s => s.Wettbewerb)
                         .Include(s => s.Ergebnisse)
                         .ThenInclude(e => e.Schuesse)
-                        .ToList());                   
+                        .ToList();
+
+                    foreach (var s in serien)
+                    {
+                        s.RingZahl = GesamtwertHelper.getGesamtwert(s.SerienId);
+                    } 
+
+
+                    return new ObservableCollection<Serie>(serien);           
                         
                 }
             }
@@ -452,8 +461,9 @@ namespace RedDotMM.Win.Model
                     _InfoCommand = new RelayCommand(() =>
                     {
                         MessageBox.Show($"RedDotMM - Wettkampfverwaltung\nVersion: {Assembly.GetExecutingAssembly().GetName().Version} " +
-                            "Software-Alternative zur DISAG RedDot Software für die Verwendung mit DISAG Bluetooth Empfänger\n"+
-                            "Projekt unter MIT-Lizenz\n" +
+                            "Software-Alternative zur DISAG RedDot Software für die Verwendung mit DISAG Bluetooth Empfänger.\n"+
+                            "Entwickelt zur Nutzung durch die Schützenvereine und -Bruderschaften in der Stadt Marienmünster.\n"+
+                            "\n" +
                             "Weitere Infos: https://github.com/t-groene/RedDotMM", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                     }, () => true);
                 }

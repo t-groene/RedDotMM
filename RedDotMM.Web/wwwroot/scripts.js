@@ -38,19 +38,41 @@ async function loadResults() {
 
 // Funktion, um die Tabelle mit Ergebnissen zu aktualisieren
 function updateTable(results) {
-    const tableBody = document.querySelector("#results-table tbody");
+    try {
+
+    
+    const tableBody = document.querySelector("#results-table tbody")
     tableBody.innerHTML = ""; // Tabelle leeren
 
-    if (results) {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${results.ergebnisId}</td>
-            <td>${results.schuetze?.anzeigeName || "Unbekannt"}</td>
-            <td>${new Date(results.zeitstempel).toLocaleString()}</td>
-            <td>${results.anzahlWertungsschuesse}</td>
-            <td>${results.anzahlProbeschuesse}</td>
-        `;
-        tableBody.appendChild(row);
+    // SchuetzenName in das h3-Element einfügen
+        const schuetzenNameElement = document.querySelector("h3.SchuetzeName");
+    if (schuetzenNameElement && results.SchuetzeName) {
+        schuetzenNameElement.textContent = results.SchuetzeName;
+    }
+
+        // Gesamtwertung in das h3-Element einfügen
+        const gesamtWertungElement = document.querySelector("h3.GesamtWertung");
+        if (gesamtWertungElement && results.GesamtWertung) {
+            gesamtWertungElement.textContent = "Gesamt: " + results.GesamtWertung + " Ring";
+        }
+
+    // Schuesse-Liste in die Tabelle eintragen
+        if (Array.isArray(results.Schuesse) && results.Schuesse.length > 0) {
+            results.Schuesse.forEach(schuss => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                <td>${schuss.SchussNr ?? ""}</td>
+                <td>${schuss.IsProbe ?? ""}</td>
+                <td>${schuss.Ringzahl ?? ""}</td>             
+            `;
+                tableBody.appendChild(row);
+            });
+        } else
+        {
+            tableBody.innerHTML = "<tr><td colspan='3'>Keine Schüsse gefunden</td></tr>";
+        }
+    } catch (error) {
+        console.error("Fehler beim Laden der Ergebnisse:", error);
     }
 }
 
