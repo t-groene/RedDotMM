@@ -73,6 +73,15 @@ namespace RedDotMM.Web
         }
 
 
+
+        public bool IsListening
+        {
+            get
+            {
+                return (_listener != null && _listener.IsListening) ;
+            }
+        }
+
         private byte[] _scheibenBild;
         /// <summary>
         /// Die Scheibe als PNG-Bild.

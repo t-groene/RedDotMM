@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,12 +24,24 @@ namespace RedDotMM.Win.Model
 
         public event EventHandler? ScheibeDrucken;
 
+        public event EventHandler ScheibenBildAktualisieren;
+
         public ScheibeViewModel(RedDotMM_Context context)
         {
             this.context = context;
             
         }
 
+
+        private byte[] _ScheibenBildPNG;
+        public byte[] ScheibenBildPNG
+        {
+            get {  return _ScheibenBildPNG;}
+            set
+            {
+                _ScheibenBildPNG = value;
+            }
+        }
 
 
 

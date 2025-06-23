@@ -545,36 +545,27 @@ namespace RedDotMM.Win.Model
 
             try
             {
-                if (webservice != null && Scheibe.Ergebnis!=null)
+                if (webservice != null && Scheibe.Ergebnis!=null && webservice.IsListening)
                 {
 
-                    webservice.Ergebnis = Scheibe.Ergebnis;                   
+                    webservice.Ergebnis = Scheibe.Ergebnis;
 
 
-                    var canv = new Canvas
-                    {
-                        Width = 1000,
-                        Height = 1000
-                    };
-                    canv.UpdateLayout();
-                    UIHelper.Scheibenzeichner.ZeichneScheibe(canv, Scheibe.Ergebnis, Scheibe.Probe, Scheibe.Ergebnis.Serie.Schuetze.Wettbewerb.Teilerwertung);
-
-                    byte[] b = UIHelper.Scheibenzeichner.getImage(canv);
-                    webservice.ScheibenBild = b;
+                    webservice.ScheibenBild = Scheibe.ScheibenBildPNG;
 
                     
                 }
 
+                UpdateRequested?.Invoke(this, EventArgs.Empty);
 
             }
             catch(Exception ex)
             {
-
+                Logger.Instance.Log($"Fehler beim Aktualisieren des Webservice: {ex.Message}", LogType.Fehler);
             }
 
 
 
-            UpdateRequested?.Invoke(this, EventArgs.Empty);
         }
 
 

@@ -1,5 +1,6 @@
 ﻿using RedDotMM.Logging;
 using RedDotMM.Model;
+using RedDotMM.Win.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,6 +75,17 @@ namespace RedDotMM.Win.Views
                         {
                             UIHelper.Scheibenzeichner.ZeichneScheibe(this.CanvScheibe, model.Ergebnis, model.Probe, model.Ergebnis.Serie.Schuetze.Wettbewerb.Teilerwertung);
                         }
+
+                        try
+                        {
+                            ((ScheibeViewModel)this.DataContext).ScheibenBildPNG = UIHelper.Scheibenzeichner.getImage(CanvScheibe);
+
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Instance.Log($"Bild für die Scheibe konnte nicht generiert werden: {ex.Message}", LogType.Fehler);
+                        }
+
                     }
                 }
             }
