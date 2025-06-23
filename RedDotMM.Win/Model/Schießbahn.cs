@@ -33,7 +33,7 @@ namespace RedDotMM.Win.Model
 
         private  RedDotMM_Context context = new RedDotMM_Context();
 
-        private Webservice webservice = new Webservice();
+        private Webservice webservice;
 
 
         public event EventHandler<EventArgs>? UpdateRequested;
@@ -48,6 +48,11 @@ namespace RedDotMM.Win.Model
             empfaenger.SchussEmpfangen += Empfaenger_SchussEmpfangen;
             OnPropertyChanged(nameof(IsConnected));
             OnPropertyChanged(nameof(Ports));
+           
+                webservice = new Webservice();
+                webservice.Fehlschuss += FehlschussRequested;
+                webservice.ScheibeAuffuellen += ScheibeAuffüllenRequested;
+            
         }
 
         private void Empfaenger_ConnectionChanged(bool obj)
@@ -255,20 +260,7 @@ namespace RedDotMM.Win.Model
                     _FehlschussCommand = new RelayCommand(
                         execute: (T) =>
                         {
-                            if (Scheibe != null)
-                            {
-                                var count = Scheibe.Ergebnis.Schuesse.Count;
-
-                                Scheibe.AddSchuss(new Schuss
-                                {
-                                    Wert = 0,
-                                    X = -5000,
-                                    Y = -3500 + ((count ) * 200),
-                                    Distanz = 0
-                                });
-                                OnUpdateRequested();
-
-                            }
+                            AddFehlschuss();
                         },
                         canExecute: (T) => { return Scheibe != null && Scheibe.Ergebnis != null; });
                 }
@@ -288,37 +280,7 @@ namespace RedDotMM.Win.Model
                     _ScheibeAuffüllenCommand = new RelayCommand(
                         execute: (T) =>
                         {
-                            if (Scheibe != null && Scheibe.Ergebnis!=null)
-                            {
-                                var count = Scheibe.Ergebnis.Schuesse.Count;
-                                var soll = Scheibe.Ergebnis.Serie.Schuetze.Wettbewerb.AnzahlWertungsSchuss;
-                                                            
-
-                                if (count < soll)
-                                {
-
-                                    if(MessageBox.Show($"Es sollen {soll} Schüsse auf der Scheibe sein. Es sind aktuell {count} Schüsse eingetragen. Möchten Sie die Scheibe auffüllen?", "Scheibe auffüllen", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
-                                    {
-                                        return;
-                                    }
-                                    Scheibe.Probe = false; // Setze Probe auf false, da wir nur Wertungsschüsse auffüllen wollen
-                                    for (int i = count; i < soll; i++)
-                                    {
-                                        Scheibe.AddSchuss(new Schuss
-                                        {
-                                            Wert = 0,
-                                            X = -5000,
-                                            Y = -3500 + ((count+i)*200) ,
-                                            Distanz = 0
-                                        });
-                                    }
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Die Scheibe ist bereits vollständig.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
-                                }
-                                OnUpdateRequested();
-                            }
+                            ScheibeAuffuellen();
                         },
                         canExecute: (T) => { return Scheibe != null && Scheibe.Ergebnis != null; });
                 }
@@ -331,8 +293,66 @@ namespace RedDotMM.Win.Model
         #endregion Commands
 
 
+        private void ScheibeAuffuellen()
+        {
+            if (Scheibe != null && Scheibe.Ergebnis != null)
+            {
+                var count = Scheibe.Ergebnis.Schuesse.Count;
+                var soll = Scheibe.Ergebnis.Serie.Schuetze.Wettbewerb.AnzahlWertungsSchuss;
 
 
+                if (count < soll)
+                {
+
+                    if (MessageBox.Show($"Es sollen {soll} Schüsse auf der Scheibe sein. Es sind aktuell {count} Schüsse eingetragen. Möchten Sie die Scheibe auffüllen?", "Scheibe auffüllen", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                    {
+                        return;
+                    }
+                    Scheibe.Probe = false; // Setze Probe auf false, da wir nur Wertungsschüsse auffüllen wollen
+                    for (int i = count; i < soll; i++)
+                    {
+                        Scheibe.AddSchuss(new Schuss
+                        {
+                            Wert = 0,
+                            X = -5000,
+                            Y = -3500 + ((count + i) * 200),
+                            Distanz = 0
+                        });
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Die Scheibe ist bereits vollständig.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                OnUpdateRequested();
+            }
+        }
+
+
+        private void AddFehlschuss()
+        {
+            try
+            {
+                if (Scheibe != null)
+                {
+                    var count = Scheibe.Ergebnis.Schuesse.Count;
+
+                    Scheibe.AddSchuss(new Schuss
+                    {
+                        Wert = 0,
+                        X = -5000,
+                        Y = -3500 + ((count) * 200),
+                        Distanz = 0
+                    });
+                    OnUpdateRequested();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Log($"Fehler beim Hinzufügn eines Fehlschuss: {ex.Message}", LogType.Fehler);
+            }
+        }
 
 
 
@@ -449,6 +469,7 @@ namespace RedDotMM.Win.Model
         {
             try
             {
+                
                 webservice.StartWebserviceAsync(WebURL);
             }
             catch (Exception ex)
@@ -458,6 +479,17 @@ namespace RedDotMM.Win.Model
             }
         }
 
+        private void FehlschussRequested(Guid guid)
+        {
+            Application.Current.Dispatcher.Invoke(() => AddFehlschuss(), System.Windows.Threading.DispatcherPriority.Normal);
+        }
+
+        private void ScheibeAuffüllenRequested(Guid guid)
+        {
+
+            Application.Current.Dispatcher.Invoke(() => ScheibeAuffuellen(), System.Windows.Threading.DispatcherPriority.Normal);
+
+        }
 
         private ICommand _StartWebserviceCommand;
         public ICommand StartWebserviceCommand

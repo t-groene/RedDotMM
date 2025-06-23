@@ -1,18 +1,36 @@
 ﻿<!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ergebnisse</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ergebnisse - RedDot-MM-System</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="scripts.js" ></script>
 </head>
 <body>
-    <div id="webhook-indicator" class="hidden"></div>
-    <h1>Ergebnisse</h1>
 
-    <h3 class="SchuetzeName">Ergebnisse</h3>
+    <div id="update-indicator" class="hidden"></div>
+
+    <!-- Header mit Überschrift, Untertitel und rechtsbündigem Logo -->
+    <div class="header">
+        <div>
+            <h1 >Ergebnisse</h1>
+            <h2>RedDot-MM-System</h2>
+        </div>
+        <img src="logo.jpeg" alt="Logo" class="logo" />
+     </div>
+    
+    <h3 class="SchuetzeName">---</h3>
     <div></div>
-    <img class="scheibe" />
+    <div class="body-main">
+        <div>
+            <img class="scheibe" alt="Scheibe" />
+        </div>
+        <div>
+            <a href="#" onclick="{Fehlschuss() }">Fehlschuss setzen</a>
+        </div>
+    </div>
+    
 
     <table id="results-table">
         <thead>
@@ -28,6 +46,5 @@
     </table>
     <h3 class="GesamtWertung"></h3>
 
-    <script src="scripts.js"></script>
 </body>
 </html>

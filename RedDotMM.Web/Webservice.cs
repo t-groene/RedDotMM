@@ -15,7 +15,7 @@ namespace RedDotMM.Web
     public class Webservice : INotifyPropertyChanged
     {
         private HttpListener _listener;
-        private string _webhookUrl;// = "http://example.com/webhook"; // Webhook-URL konfigurieren
+     
         private string _url = "";
 
 
@@ -39,11 +39,12 @@ namespace RedDotMM.Web
                 if (_ergebnis != value)
                 {
                     _ergebnis = value;
-                    OnPropertyChanged(nameof(Ergebnis));
-                    TriggerWebhook();
+                    OnPropertyChanged(nameof(Ergebnis));                    
                 }
             }
         }
+
+        private bool UpdataAvailable { get; set; } = false;
 
 
         private ScheibeModel ScheibeModel
@@ -64,7 +65,7 @@ namespace RedDotMM.Web
                             IsProbe = s.Typ == SchussTyp.Probe,
                             x = s.X,
                             y = s.Y,
-                             SchussNummer =s.LfdSchussNummer
+                            SchussNummer =s.LfdSchussNummer                           
                         }).ToArray()
                     };
                 }
@@ -94,8 +95,7 @@ namespace RedDotMM.Web
                 if (_scheibenBild != value)
                 {
                     _scheibenBild = value;
-                    OnPropertyChanged(nameof(ScheibenBild));
-                    TriggerWebhook();
+                    OnPropertyChanged(nameof(ScheibenBild));                  
                 }
             }
         }
@@ -109,6 +109,7 @@ namespace RedDotMM.Web
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(v));
             }
+            UpdataAvailable = true;
         }
 
 
@@ -244,8 +245,7 @@ namespace RedDotMM.Web
                 }
 
                 var formattedUrl = $"http://+:{port}/";
-
-                _webhookUrl = _url + "webhook";
+                
 
                 SetUrlRichtlinie(port);
 
@@ -334,6 +334,8 @@ namespace RedDotMM.Web
         }
 
 
+        //
+
 
         private void HandleRequest(HttpListenerContext context)
         {
@@ -349,13 +351,17 @@ namespace RedDotMM.Web
                 {
                     ServeStaticFiles(request, response);
                 }
-                else if (request.Url.AbsolutePath == "/api/Command/Fehlerschuss")
+                else if (request.Url.AbsolutePath == "/api/Command/Fehlschuss")
                 {
                     RaiseFehlschuss();
                 }
                 else if (request.Url.AbsolutePath == "/api/Command/Auffuellen")
                 {
                     RaiseScheibeAuffuellen();
+                }
+                else if (request.Url.AbsolutePath== "/api/updateAvailable")
+                {
+                    ServeUpdateAvailable(response);
                 }
                 else if (request.Url.AbsolutePath == "/api/ergebniss")
                 {
@@ -365,10 +371,7 @@ namespace RedDotMM.Web
                 {
                     ServeBild(response);
                 }
-                else if (request.Url.AbsolutePath == "/webhook")
-                {
-                   //nix machen
-                }
+                
 
                 else if (request.Url.AbsolutePath == "/")
                 {
@@ -458,6 +461,22 @@ namespace RedDotMM.Web
         }
 
 
+        private void ServeUpdateAvailable(HttpListenerResponse response)
+        {
+            JsonSerializerOptions options = new()
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+                WriteIndented = true
+            };
+
+            var ret = new { UpdateAvailable = UpdataAvailable };
+            var json = JsonSerializer.Serialize(ret, options);
+            var buffer = Encoding.UTF8.GetBytes(json);
+            response.ContentType = "application/json";
+            response.OutputStream.Write(buffer, 0, buffer.Length);
+            UpdataAvailable = false; // Reset after serving
+
+        }
 
         private void ServeErgebniss(HttpListenerResponse response)
         {
@@ -473,76 +492,6 @@ namespace RedDotMM.Web
             response.ContentType = "application/json";
             response.OutputStream.Write(buffer, 0, buffer.Length);
         }
-
-
-
-
-
-
-
-
-        #region Webhook
-
-
-        //private async Task MonitorResults()
-        //{
-        //    while (true)
-        //    {
-        //        var currentResults = GetErgebnisse();
-
-        //        if (!AreResultsEqual(_lastResults, currentResults))
-        //        {
-        //            _lastResults = currentResults;
-        //            await TriggerWebhook(currentResults);
-        //        }
-
-        //        await Task.Delay(5000); // Überprüfung alle 5 Sekunden
-        //    }
-        //}
-
-        private async Task TriggerWebhook()
-        {
-            try
-            {
-
-                if (_listener==null || !_listener.IsListening)
-                    return;
-
-                JsonSerializerOptions options = new()
-                {
-                    ReferenceHandler = ReferenceHandler.Preserve,
-                    WriteIndented = true
-                };
-                var json = JsonSerializer.Serialize(Ergebnis, options);
-                using var client = new HttpClient();
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await client.PostAsync(_webhookUrl, content);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    Console.WriteLine("Webhook erfolgreich ausgelöst.");
-                }
-                else
-                {
-                    Console.WriteLine($"Fehler beim Auslösen des Webhooks: {response.StatusCode}");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Fehler beim Auslösen des Webhooks: {ex.Message}");
-            }
-        }
-
-        private bool AreResultsEqual(List<object> oldResults, List<object> newResults)
-        {
-            return JsonSerializer.Serialize(oldResults) == JsonSerializer.Serialize(newResults);
-        }
-
-
-
-
-
-        #endregion Webhook
 
 
 

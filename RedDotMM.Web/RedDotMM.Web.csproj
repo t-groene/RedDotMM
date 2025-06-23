@@ -28,6 +28,9 @@
     <None Update="wwwroot\index.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="wwwroot\logo.jpeg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="wwwroot\scripts.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

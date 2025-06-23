@@ -7,3 +7,4 @@
 index.html
 scripts.js
 styles.css
+logo.jpeg

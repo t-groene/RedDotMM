@@ -1,5 +1,7 @@
 ﻿const apiUrl = "/api/ergebniss";
-const webhookUrl = "/webhook"; // Webhook-Endpunkt
+const apiBildUrl = "/api/bild";
+const apiUpdateUrl = "/api/updateAvailable";
+const apiFehlschussURL = "/api/Command/Fehlschuss";
 
 // Funktion, um Ergebnisse von der API zu laden
 async function loadResults() {
@@ -19,7 +21,7 @@ async function loadResults() {
     // Funktion, um das Bild von der API zu laden und das <img class="scheibe"/> zu aktualisieren
     async function updateImage() {
         try {
-            const response = await fetch("/api/bild");
+            const response = await fetch(apiBildUrl);
             if (!response.ok) {
                 throw new Error("Fehler beim Abrufen des Bildes");
             }
@@ -55,18 +57,31 @@ function updateTable(results) {
         if (gesamtWertungElement && results.GesamtWertung) {
             gesamtWertungElement.textContent = "Gesamt: " + results.GesamtWertung + " Ring";
         }
+        var summe = 0;
 
     // Schuesse-Liste in die Tabelle eintragen
         if (Array.isArray(results.Schuesse) && results.Schuesse.length > 0) {
             results.Schuesse.forEach(schuss => {
+
+                var probe = schuss.IsProbe ? "Probe" : "Wertung";
+                summe += schuss.Ringzahl ?? 0;
                 const row = document.createElement("tr");
                 row.innerHTML = `
-                <td>${schuss.SchussNr ?? ""}</td>
-                <td>${schuss.IsProbe ?? ""}</td>
+                <td>${schuss.SchussNummer ?? ""}</td>
+                <td>${probe ?? ""}</td>
                 <td>${schuss.Ringzahl ?? ""}</td>             
             `;
                 tableBody.appendChild(row);
             });
+
+
+            const resultRow = document.createElement("tr");
+
+            resultRow.innerHTML = `
+                <td colspan="2">Summe:</td>
+                <td>${summe}</td>
+            `;
+            tableBody.appendChild(resultRow);
         } else
         {
             tableBody.innerHTML = "<tr><td colspan='3'>Keine Schüsse gefunden</td></tr>";
@@ -76,31 +91,63 @@ function updateTable(results) {
     }
 }
 
-// Funktion, um den Webhook-Indikator anzuzeigen
-function showWebhookIndicator() {
-    const indicator = document.getElementById("webhook-indicator");
-    indicator.classList.add("visible");
-    setTimeout(() => {
-        indicator.classList.remove("visible");
-    }, 1000); // 1 Sekunde anzeigen
+
+// Funktion, um Daten Zyklisch zu aktualisieren
+async function UpdateData() {
+    //Prüfen, ob es Änderungen gibt;
+    try {
+
+        //Aktualisierungs-Indikator sichtbarkeit auf visible setzen
+        const updateIndicator = document.querySelector("#update-indicator");
+        if (updateIndicator) {
+            updateIndicator.style.visibility = "visible";
+        }
+        
+
+        const response = await fetch(apiUpdateUrl);
+        if (!response.ok) {
+            throw new Error("Fehler beim prüfen des Update-Status");
+        }
+        const data = await response.json();
+        if (data.UpdateAvailable == true) {
+            console.log("Update verfügbar, lade Ergebnisse neu...");
+            loadResults();
+        }
+
+        //Aktualisierungs-Indikator sichtbarkeit auf hidden setzen
+        if (updateIndicator) {
+            updateIndicator.style.visibility = "hidden";
+        }
+
+    } catch (error) {
+        console.error("Fehler beim prüfen des Update-Status", error);
+    }
+
+
 }
 
-// WebSocket-Verbindung für den Webhook
-function setupWebhookListener() {
-    const eventSource = new EventSource(webhookUrl);
-    eventSource.onmessage = (event) => {
-        console.log("Webhook ausgelöst:", event.data);
-        showWebhookIndicator();
-        loadResults(); // Ergebnisse neu laden
-    };
 
-    eventSource.onerror = (error) => {
-        console.error("Fehler beim Webhook:", error);
-    };
+async function Fehlschuss()
+{
+    try {
+
+        //Aktualisierungs-Indikator sichtbarkeit auf visible setzen
+       
+        const response = await fetch(apiFehlschussURL);
+        if (!response.ok) {
+            throw new Error("Fehler beim senden eines Fehlschusses");
+        }
+        
+    } catch (error) {
+        console.error("Fehler beim senden eines Fehlschusses:", error);
+    }
 }
+
+
+
 
 // Initialisierung
 document.addEventListener("DOMContentLoaded", () => {
     loadResults();
-    setupWebhookListener();
+    setInterval(UpdateData, 1000);
 });
