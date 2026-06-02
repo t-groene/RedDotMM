@@ -21,6 +21,8 @@ namespace RedDotMM.Model
         public Guid SerienID { get; set; }
         public Serie Serie { get; set; }  
 
+        public int LfdInSerie { get; set; }
+
         public int LfdNummer { get; set; }
 
         //[ForeignKey(nameof(Wettbewerb))]

@@ -180,7 +180,7 @@ namespace RedDotMM.Win.Model
 
 
 
-                    Items = new ObservableCollection<AuswertungsItemViewModel>(auswertung);
+                    Items = new ObservableCollection<AuswertungsItemViewModel>(auswertung.OrderByDescending(a=>a.GesamtErgebnis));
                 }
 
 

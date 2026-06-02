@@ -68,8 +68,9 @@ namespace RedDotMM.Win.Model
                 if (canSave != value)
                 {
                     canSave = value;
-                    OnPropertyChanged(nameof(CanSave));     
-                    
+                    OnPropertyChanged(nameof(CanSave));  
+                    OnPropertyChanged(nameof(SpeichernCommand)); // Notify that the command's CanExecute might have changed
+
                 }
             }
         }
@@ -83,7 +84,8 @@ namespace RedDotMM.Win.Model
                 if (_CanNew != value)
                 {
                     _CanNew = value;
-                    OnPropertyChanged(nameof(CanNew));                   
+                    OnPropertyChanged(nameof(CanNew));
+                    OnPropertyChanged(nameof(NeuesElementCommand)); // Notify that the command's CanExecute might have changed
                 }
             }
         }   
@@ -99,7 +101,8 @@ namespace RedDotMM.Win.Model
                 {
                     _CanDelete = value;
                     OnPropertyChanged(nameof(CanDelete));
-                    
+                    OnPropertyChanged(nameof(LoeschenCommand)); // Notify that the command's CanExecute might have changed
+
                 }
             }
         }   

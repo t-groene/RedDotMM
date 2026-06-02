@@ -708,7 +708,8 @@ namespace RedDotMM.Win.Model
                     {
                         ErgebnisAbgeschlossen = false,
                         SerienID = SerienID,
-                        LfdNummer = lfd + 1 // Nächste laufende Nummer
+                        LfdNummer = lfd + 1, // Nächste laufende Nummer
+                        LfdInSerie = context.Ergebnisse.Where(e => e.SerienID == SerienID).Count() + 1 // Nächste laufende Nummer in der Serie
                     };
                     context.Ergebnisse.Add(erg);
                     context.SaveChanges();
@@ -753,7 +754,7 @@ namespace RedDotMM.Win.Model
                     
 
                     //Prüfen ob Probe oder Wertungsschuss (basieren auf nummer der Scheibe in Serie)
-                    if (this.Scheibe.Ergebnis.Serie.Schuetze.Wettbewerb.ProbeNurAufErsterScheibe && this.Scheibe.Ergebnis.Serie.Ergebnisse.Count > 1)
+                    if (this.Scheibe.Ergebnis.Serie.Schuetze.Wettbewerb.ProbeNurAufErsterScheibe && this.Scheibe.Ergebnis.LfdInSerie>1)
                     {
                         this.Scheibe.Probe = false; // Wenn ProbeNurAufErsterScheibe true ist, dann nur auf der ersten Scheibe
                     }

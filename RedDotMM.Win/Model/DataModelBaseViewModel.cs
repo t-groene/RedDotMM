@@ -28,6 +28,7 @@ namespace RedDotMM.Win.Model
                 {
                     _DatenObjekt = value;
                     OnPropertyChanged(nameof(DatenObjekt));
+                    CheckCanDelete();
                 }
             }
         }
@@ -72,6 +73,23 @@ namespace RedDotMM.Win.Model
                         DatenObjekt = new T();
                     }
                 }
+                CheckCanDelete();
+            }
+        }
+
+
+        public void CheckCanDelete()
+        {
+            if (DatenObjekt != null)
+            {
+                if (Context.Entry(DatenObjekt).State != Microsoft.EntityFrameworkCore.EntityState.Detached)
+                {
+                    CanDelete = true;
+                }
+                else
+                {
+                    CanDelete = false;
+                }
             }
         }
 
@@ -89,6 +107,10 @@ namespace RedDotMM.Win.Model
 
             if (DatenObjekt != null)
             {
+
+                OnPropertyChanged(nameof(AnzeigeName));
+
+
                 ValidationContext validContext = new ValidationContext(DatenObjekt, serviceProvider: null, items: null);
                 var validationResults = DatenObjekt.Validate(validContext);
                 if (validationResults.Any())
@@ -105,6 +127,7 @@ namespace RedDotMM.Win.Model
                 {
                     return true;
                 }
+                
             }
             return true;
             
@@ -122,6 +145,8 @@ namespace RedDotMM.Win.Model
                 if (DatenObjekt != null)
                 {
                    
+                    
+
                     if (ValidateDatenObjekt(false))
                     {
 
@@ -153,8 +178,8 @@ namespace RedDotMM.Win.Model
                 // Create a new Wettbewerb instance for the next entry
                 DatenObjekt = new T();
 
-
-
+                CheckCanDelete();
+                OnPropertyChanged(nameof(AnzeigeName));
 
             }
             catch (Exception ex)
@@ -170,7 +195,34 @@ namespace RedDotMM.Win.Model
 
         public override void Loeschen()
         {
-            throw new NotImplementedException();
+
+            try
+            {
+                if (DatenObjekt != null)
+                {
+                    if(Context.Entry(DatenObjekt).State != Microsoft.EntityFrameworkCore.EntityState.Detached)
+                    {
+                        if (MessageBox.Show("Möchten Sie dieses Element wirklich löschen?", "Element löschen", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                        {
+                            Context.Remove(DatenObjekt);
+                            Context.SaveChanges();
+                            UpdateValueEvent?.Invoke(this, DatenObjekt);
+                            DatenObjekt = new T();
+                            OnPropertyChanged(nameof(AnzeigeName));
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Das Element ist nicht in der Datenbank vorhanden und kann daher nicht gelöscht werden.", "Löschen nicht möglich", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }   
+                }
+                CheckCanDelete();
+            }catch(Exception ex)
+            {
+                // Handle exception (e.g., log it)
+                MessageBox.Show($"Fehler beim Löschen : {ex.Message}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+                    
         }
 
         public override void Speichern()
@@ -206,6 +258,8 @@ namespace RedDotMM.Win.Model
 
 
                 }
+                CheckCanDelete();
+                OnPropertyChanged(nameof(AnzeigeName));
             }
             catch (Exception ex)
             {
@@ -247,8 +301,10 @@ namespace RedDotMM.Win.Model
 
 
                     }
+                    
 
                 }
+                CheckCanDelete();
 
                 this.Context.Dispose();
 

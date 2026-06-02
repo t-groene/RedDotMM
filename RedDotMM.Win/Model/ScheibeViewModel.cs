@@ -104,7 +104,8 @@ namespace RedDotMM.Win.Model
             //Prüfen ob Probe toggeln
             if (Probe)
             {
-                if (Ergebnis.Schuesse.Count(s => s.Typ == SchussTyp.Probe) >= Ergebnis.Serie.Schuetze.Wettbewerb.AnzahlProbeschuss)
+                if ((Ergebnis.Schuesse.Count(s => s.Typ == SchussTyp.Probe) >= Ergebnis.Serie.Schuetze.Wettbewerb.AnzahlProbeschuss) &&
+                    (Ergebnis.LfdInSerie == 1 || Ergebnis.Serie.Schuetze.Wettbewerb.ProbeNurAufErsterScheibe))
                 {
                     Probe = false;
                 }

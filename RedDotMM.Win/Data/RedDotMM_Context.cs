@@ -27,13 +27,14 @@ namespace RedDotMM.Win.Data
 
         public RedDotMM_Context(DbContextOptions<RedDotMM_Context> options) : base(options)
         {
+           
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
 
-
-            optionsBuilder.UseSqlite("Data Source=RedDotMM_Datenbank.sqlite");
+           optionsBuilder.UseSqlite(App.ConnectionString);
+            //optionsBuilder.UseSqlite("Data Source=RedDotMM_Datenbank.sqlite");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
