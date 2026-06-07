@@ -16,6 +16,7 @@ using RedDotMM.Model;
 using RedDotMM.Web;
 using RedDotMM.Win.Data;
 using RedDotMM.Win.UIHelper;
+using RedDotMM.Win.Views;
 
 
 
@@ -34,6 +35,8 @@ namespace RedDotMM.Win.Model
         private  RedDotMM_Context context = new RedDotMM_Context();
 
         private Webservice webservice;
+
+        private QRCodeWindow? qrCodeWindow;
 
 
         public event EventHandler<EventArgs>? UpdateRequested;
@@ -465,17 +468,50 @@ namespace RedDotMM.Win.Model
             }
         }
 
-        public void StartWebservice()
+        public async void StartWebservice()
         {
             try
             {
                 
                 webservice.StartWebserviceAsync(WebURL);
+                
+                // Kurz warten, damit der Webservice Zeit hat zu starten
+                await Task.Delay(500);
+                
+                // Commands aktualisieren
+                OnPropertyChanged(nameof(CanShowQRCode));
+                CommandManager.InvalidateRequerySuggested();
             }
             catch (Exception ex)
             {
                 Logger.Instance.Log($"Fehler beim Starten des Webservice: {ex.Message}", Logging.LogType.Fehler);
                 MessageBox.Show($"Fehler beim Starten des Webservice: {ex.Message}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public async void StopWebservice()
+        {
+            try
+            {
+                webservice.StopWebserviceAsync();
+                
+                // Kurz warten, damit der Webservice Zeit hat zu stoppen
+                await Task.Delay(200);
+                
+                // QR-Code-Fenster leeren/aktualisieren
+                if (qrCodeWindow != null && qrCodeWindow.IsLoaded)
+                {
+                    Application.Current.Dispatcher.Invoke(() => qrCodeWindow.ClearQRCode());
+                }
+                
+                // Commands aktualisieren
+                OnPropertyChanged(nameof(CanShowQRCode));
+                CommandManager.InvalidateRequerySuggested();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Log($"Fehler beim Stoppen des Webservice: {ex.Message}", Logging.LogType.Fehler);
+                MessageBox.Show($"Fehler beim Stoppen des Webservice: {ex.Message}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -503,9 +539,27 @@ namespace RedDotMM.Win.Model
                         {
                             StartWebservice();
                         },
-                        canExecute: (T) => { return webservice!=null; });
+                        canExecute: (T) => { return webservice!=null && !webservice.IsListening; });
                 }
                 return _StartWebserviceCommand;
+            }
+        }
+
+        private ICommand _StopWebserviceCommand;
+        public ICommand StopWebserviceCommand
+        {
+            get
+            {
+                if (_StopWebserviceCommand == null)
+                {
+                    _StopWebserviceCommand = new RelayCommand(
+                        execute: (T) =>
+                        {
+                            StopWebservice();
+                        },
+                        canExecute: (T) => { return webservice!=null && webservice.IsListening; });
+                }
+                return _StopWebserviceCommand;
             }
         }
 
@@ -563,6 +617,70 @@ namespace RedDotMM.Win.Model
                         canExecute: (T) => { return webservice != null; });
                 }
                 return _RemoveFirewallCommand;
+            }
+        }
+
+
+        private ICommand _ShowQRCodeCommand;
+        public ICommand ShowQRCodeCommand
+        {
+            get
+            {
+                if (_ShowQRCodeCommand == null)
+                {
+                    _ShowQRCodeCommand = new RelayCommand(
+                        execute: (T) =>
+                        {
+                            ShowQRCode();
+                        },
+                        canExecute: (T) => { return CanShowQRCode; });
+                }
+                return _ShowQRCodeCommand;
+            }
+        }
+
+        public bool CanShowQRCode
+        {
+            get
+            {
+                return webservice != null && webservice.IsListening && !string.IsNullOrWhiteSpace(WebURL);
+            }
+        }
+
+        private void ShowQRCode()
+        {
+            try
+            {
+                if (qrCodeWindow == null || !qrCodeWindow.IsLoaded)
+                {
+                    qrCodeWindow = new QRCodeWindow();
+                    qrCodeWindow.Closed += (s, e) => qrCodeWindow = null;
+                }
+
+                if (webservice.IsListening && !string.IsNullOrWhiteSpace(WebURL))
+                {
+                    // Erstelle die vollständige URL mit /api/index.html
+                    string fullUrl = WebURL.TrimEnd('/') + "/api/index.html";
+                    qrCodeWindow.SetUrl(fullUrl);
+                    qrCodeWindow.Show();
+                    qrCodeWindow.Activate();
+                }
+                else
+                {
+                    qrCodeWindow.ClearQRCode();
+                    MessageBox.Show("Der Webserver ist nicht aktiv oder es ist keine URL konfiguriert.", 
+                        "Fehler", 
+                        MessageBoxButton.OK, 
+                        MessageBoxImage.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Log($"Fehler beim Anzeigen des QR-Codes: {ex.Message}", LogType.Fehler);
+                MessageBox.Show($"Fehler beim Anzeigen des QR-Codes: {ex.Message}", 
+                    "Fehler", 
+                    MessageBoxButton.OK, 
+                    MessageBoxImage.Error);
             }
         }
 

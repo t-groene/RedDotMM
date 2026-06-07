@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
 	<Version>0.0.3</Version>
+	<ApplicationIcon>Ressources\Images\red_dot_shooting_icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,11 +15,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Ressources\Images\red_dot_shooting_icon.ico" />
+    <None Remove="Ressources\Images\red_dot_shooting_icon.png" />
     <None Remove="Ressources\Images\splash.jpeg" />
   </ItemGroup>
 
   <ItemGroup>
     <Page Remove="Control\ScheibenControl.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Ressources\Images\red_dot_shooting_icon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -29,6 +38,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="QRCoder" Version="1.6.0" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +52,10 @@
 
   <ItemGroup>
     <Folder Include="Control\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Ressources\Images\red_dot_shooting_icon.png" />
   </ItemGroup>
 
   <ItemGroup>

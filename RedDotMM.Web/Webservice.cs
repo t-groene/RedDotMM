@@ -177,17 +177,43 @@ namespace RedDotMM.Web
                 var thread = new Thread(() => StartWebService(url) );
                 
                 thread.Start();
+                System.Threading.Thread.Sleep(500);
+                //Start abwarten
 
+                int count = 0;
+                while (_listeningStarting && count <100)
+                {
+                    System.Threading.Thread.Sleep(200);
+                    count++;
+                }
+
+                if (count >= 100)
+                {
+                    throw new InvalidOperationException($"Webserver konnte nicht gestartet werden!\n Timeout!");
+
+
+                }
+
+                if (_listeningSuccessfulStarted == false)
+                {
+                    throw new InvalidOperationException($"Webserver konnte nicht gestartet werden!\n{_listeningStartingError}");
+
+                }
             }
             catch (Exception ex)
             {
                 Logging.Logger.Instance.Log($"Fehler beim Starten des Webservices: {ex.Message}", Logging.LogType.Fehler);
-                //throw new InvalidOperationException("Fehler beim Starten des Webservices.", ex);
+                throw ex;
             }
 
 
         }
 
+        //Status-Variable, die angiebt, ob der Start erfolgreich war.
+        private bool _listeningSuccessfulStarted =false;
+        private bool _listeningStarting = false;
+        private string _listeningStartingError = null;
+        
         public void StopWebserviceAsync()
         {
             try
@@ -218,6 +244,8 @@ namespace RedDotMM.Web
             try
             {
                 cancelListening = false;
+                _listeningSuccessfulStarted = false; //Zuzrücksetzen
+                _listeningStarting = true;
                 if (_listener != null && _listener.IsListening)
                 {
                     throw new InvalidOperationException("Listener noch aktiv");
@@ -260,6 +288,9 @@ namespace RedDotMM.Web
                 // Überwachung der Ergebnisse starten
                 //Task.Run(() => MonitorResults());
                 Logging.Logger.Instance.Log($"Webserver gestartet unter {_url}", Logging.LogType.Info);
+                _listeningSuccessfulStarted = true; // Erfolgreich gestartet
+                _listeningStarting = false;
+
                 while (!cancelListening)
                 {
                     var context = _listener.GetContext();
@@ -271,6 +302,9 @@ namespace RedDotMM.Web
             catch (Exception ex)
             {
                 Logging.Logger.Instance.Log($"Fehler beim Starten des Webservers: {ex.Message}", Logging.LogType.Fehler);
+                _listeningSuccessfulStarted = false;
+                _listeningStarting = false;
+                _listeningStartingError = ex.Message;
                 //throw;
             }
 

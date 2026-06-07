@@ -20,18 +20,15 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
 
-       
-            
-        
-        
-
-
-
     </Window.Resources>
+    
     <Window.Icon>
+        <BitmapImage UriSource="pack://application:,,,/RedDotMM.Win;component/Ressources/Images/red_dot_shooting_icon.png" />
+    </Window.Icon>
+    <!--<Window.Icon>
         <DrawingImage Drawing="{Binding Path=(local:IconList.ApplicationIcon),  Converter={StaticResource DrawingConverter} , ConverterParameter={StaticResource SolidDefaultBrush}}">
         </DrawingImage>
-    </Window.Icon>
+    </Window.Icon>-->
     <Window.DataContext>
         <vm:MainModel />
     </Window.DataContext>
@@ -45,7 +42,7 @@
         <!-- In MainWindow.xaml -->
         <Ribbon Grid.Row="0">
             <Ribbon.ApplicationMenu>
-                <RibbonApplicationMenu>
+                <RibbonApplicationMenu SmallImageSource="pack://application:,,,/RedDotMM.Win;component/Ressources/Images/red_dot_shooting_icon.png">
                     <RibbonApplicationMenuItem Header="Info" Command="{Binding InfoCommand}" />
                     <RibbonApplicationMenuItem Header="Beenden" Command="{Binding BeendenCommand}" />
                 </RibbonApplicationMenu>
@@ -150,6 +147,8 @@
                     </RibbonComboBox>
                     <RibbonTextBox Label="Netzwerk-Port" Text="{Binding AktiveSchießbahn.WebPort, Mode=TwoWay}"/>
                     <RibbonButton x:Name="cmdStartWebservice" Label="Webservice Starten" Command="{Binding AktiveSchießbahn.StartWebserviceCommand}" />
+                    <RibbonButton x:Name="cmdStopWebservice" Label="Webservice Stoppen" Command="{Binding AktiveSchießbahn.StopWebserviceCommand}" />
+                    <RibbonButton x:Name="cmdShowQRCode" Label="QR-Code anzeigen" Command="{Binding AktiveSchießbahn.ShowQRCodeCommand}" />
                     <RibbonButton x:Name="cmdAddFirewall" Label="Firewall-Ausnahme erstellen" Command="{Binding AktiveSchießbahn.SetFirewallCommand}" />
                     <RibbonButton x:Name="cmdRemoveFirewall" Label="Firewall-Ausnahme entfernen" Command="{Binding AktiveSchießbahn.RemoveFirewallCommand}" />
 
