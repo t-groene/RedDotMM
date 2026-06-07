@@ -19,6 +19,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedDotMM.Logger", "RedDotMM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedDotMM.CommonHelper", "RedDotMM.CommonHelper\RedDotMM.CommonHelper.csproj", "{35986A51-B3FB-030E-B41B-A09FBD5069DA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Setup", "Setup", "{CD138C34-7683-4C4C-9A0F-B902826A4A37}"
+	ProjectSection(SolutionItems) = preProject
+		RedDotMM.Win\bin\publish\ClickOnce\RedDotMM.Win.zip = RedDotMM.Win\bin\publish\ClickOnce\RedDotMM.Win.zip
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
